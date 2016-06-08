@@ -3,17 +3,28 @@
 
     <style name="AppTheme" parent="Base.Theme.AppCompat.Light">
         <item name="android:colorPrimary">#009688</item>
-        <item name="android:colorPrimaryDark">#00796B</item>
-        <item name="android:textColorPrimary">#00796B</item>
+        <item name="android:colorPrimaryDark">#009688</item>
+        <item name="android:textColorPrimary">#009688</item>
         <item name="android:navigationBarColor">#009688</item>
         <item name="android:colorAccent">#009688</item>
+        <item name="actionOverflowMenuStyle">@style/CMOptionsMenu</item>
+        <item name="android:actionBarStyle">@style/MyApp.ActionBar</item>
     </style>
-    >
+
+    <style name="CMOptionsMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:textColorPrimary">#000000</item>  </style>
+
+        <!-- Bonus: if you want to style whole Action Bar, not just the menu -->
+        <style name="MyApp.ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
+            <!-- Blue background color & black bottom border -->
+            <item name="android:colorBackground">#FFFFFF</item>
+        </style>
+
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">#D51212</item>
     </style>
 </resources>

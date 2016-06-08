@@ -60,14 +60,17 @@ public class NfcTagReaderActivity extends NfcReaderActivity {
 
         //
         // [contact_name]|[phone_number]|[ad_title]|[ad_description]|[ad_objectID]|[image_url]
+        // Here we are extracting information from the tag and placing it into an intent for CreateAdActivity
+        // We are also creating a new Parse object that contains the Ad id and the geolocation of the tap event
+
         Intent intent = new Intent(NfcTagReaderActivity.this, CreateAdActivity.class);
         intent.putExtra("contact_name",separated[0]);
-        intent.putExtra("phone_number",separated[1]);
+/*        intent.putExtra("phone_number",separated[1]);
         intent.putExtra("ad_title",separated[2]);
-        intent.putExtra("ad_description", separated[3]);
-        intent.putExtra("ad_objectID", separated[4]);
-        intent.putExtra("image_url", separated[5]);
-        String ObjectId = separated[4];
+        intent.putExtra("ad_description", separated[3]);*/
+        intent.putExtra("ad_objectID", separated[1]);
+        //intent.putExtra("image_url", separated[2]);
+        String ObjectId = separated[1];
         Log.i("ObjectID=", ""+ObjectId);
         SendDataToBackend(ObjectId);
         startActivityForResult(intent, 0);

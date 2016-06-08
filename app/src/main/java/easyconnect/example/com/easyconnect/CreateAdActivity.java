@@ -33,6 +33,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.IOException;
 
+import java.util.Random;
+
 
 public class CreateAdActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -55,9 +57,11 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
     TextView adDetails;
     TextView adImageUrl;
     ImageView adImage;
+    TextView GameName;
     // the adImage ImageView in bytes
     byte[] image;
-
+    public boolean done = false;
+char letter;
     SharedPreferences sharedPrefs;
 
     @Override
@@ -72,7 +76,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
         FloatingActionButton createAdButton = (FloatingActionButton) findViewById(R.id.create_ad_button);
         createAdButton.setOnClickListener(this);
         fullName = (TextView) findViewById(R.id.fullName);
-        phoneNumber = (TextView) findViewById(R.id.phoneNumber);
+        //phoneNumber = (TextView) findViewById(R.id.phoneNumber);
         adTitle = (TextView) findViewById(R.id.adTitle);
         adDetails = (TextView) findViewById(R.id.adDetails);
         adImageUrl = (TextView) findViewById(R.id.adImageUrl);
@@ -80,35 +84,183 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
         // Locate the button in main.xml
         uploadImageButton = (Button) findViewById(R.id.uploadbtn);
 
+        // Capture button clicks
+
         Intent intent = getIntent();
         ComponentName caller = getCallingActivity();
 
         //check the caller activity
-        if(caller != null && caller.getClassName().compareTo("easyconnect.example.com.easyconnect.NfcTagReaderActivity") == 0){
+       if(caller != null && caller.getClassName().compareTo("easyconnect.example.com.easyconnect.NfcTagReaderActivity") == 0)
+    {
             //Set global identifier to 0 i.e its not my ad
             isMyAd = 0;
             //[contact_name]|[phone_number]|[ad_title]|[ad_description]|[image_url]
             // No editing permission In the case of Extract from NFC
+         letter = LetterGenerator(intent.getStringExtra("contact_name"));
+        setTitle("You Got '" +Character.toString(letter)+"' !");
+
             fullName.setText(intent.getStringExtra("contact_name"));
-            fullName.setEnabled(false);
+        fullName.setEnabled(false);
+            adTitle.setEnabled(false);
+            adDetails.setEnabled(false);
+            adImageUrl.setEnabled(false);
+        /*
             phoneNumber.setText(intent.getStringExtra("phone_number"));
             phoneNumber.setEnabled(false);
+            phoneNumber.setVisibility(View.GONE);
             adTitle.setText(intent.getStringExtra("ad_title"));
             adTitle.setEnabled(false);
             adDetails.setText(intent.getStringExtra("ad_description"));
             adDetails.setEnabled(false);
             // for now just hard code the default image url , otherwise picassa will crash
             adImageUrl.setText(intent.getStringExtra("image_url"));
-            adImageUrl.setEnabled(false);
+            adImageUrl.setEnabled(false);*/
             uploadImageButton.setVisibility(View.GONE);
+            createAdButton.setVisibility(View.GONE);
 
             //If we are using NFC the Image is getting loaded from parse. This function sets the retrieveParseObject and retrieveImage
-            RetrieveParseObjects(intent.getStringExtra("ad_objectID"));
+            //In addition to initializing the view
+         objectID = intent.getStringExtra("ad_objectID");
 
-            objectID = intent.getStringExtra("ad_objectID");
-        }
+        RetrieveParseObjects(objectID, new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
 
-        else{
+                if (e == null) {
+                    // object will be your imgupload ParseObject
+                    retrieveObject = object;
+                    //get records from parse
+                    fullName.setText(retrieveObject.getString("Name"));
+
+                    /*phoneNumber.setText(intent.getStringExtra("phone_number"));
+                    phoneNumber.setEnabled(false);
+                    phoneNumber.setVisibility(View.GONE);*/
+                    adTitle.setText(retrieveObject.getString("Title"));
+
+                    adDetails.setText(retrieveObject.getString("Details"));
+
+                    // for now just hard code the default image url , otherwise picassa will crash
+                    adImageUrl.setText(retrieveObject.getString("ImageUrl"));
+
+                    // get the image bitmap from retrieveResult
+                    ParseFile imageFile = (ParseFile) retrieveObject.get("ImageFile");
+
+
+                    imageFile.getDataInBackground(new GetDataCallback() {
+                        public void done(byte[] data, ParseException e) {
+                            if (e == null) {
+                                // data has the bytes for the image
+                                retrieveImage = data;
+                                adImage.setImageBitmap(dbHandler.getImage(retrieveImage));
+                            } else {
+                                // something went wrong
+                            }
+                        }
+                    });
+
+
+                    // RetrieveParseObjects(objectID);
+
+                    String Name = fullName.getText().toString();
+                    // String phone = phoneNumber.getText().toString();
+                    String Title = adTitle.getText().toString();
+                    String Details = adDetails.getText().toString();
+                    String ImageUrl = adImageUrl.getText().toString();
+                    String GameName = "Lucky Letters!";
+
+
+                    Cursor c;
+                    long rowID;
+                    long adID;
+                    dbHandler.open();
+
+
+                    c = dbHandler.searchAdbyObj_ID(objectID);
+
+                    c.moveToFirst();
+
+
+
+                    if(c!= null  && c.getCount() > 0){
+                    if( c.getInt(5) == 1 && c.getCount() > 1)
+                    {
+                        Toast.makeText(CreateAdActivity.this, "It's your promotion!",
+                                Toast.LENGTH_SHORT).show();
+                        c.moveToNext();
+
+                    }
+
+
+                        if(c.getInt(5) != 1) {
+                        //The Promotion is already stored on the users mobile
+                        Log.i("Loc", "Object objectID=" + objectID + " Exists");
+                        Toast.makeText(CreateAdActivity.this, objectID + " objectID Exists",
+                                Toast.LENGTH_SHORT).show();
+
+                        Intent Intent2 = new Intent(CreateAdActivity.this, ContactInfoActivity.class);
+                        adID = dbHandler.selectLastInsearted();
+                        adID = dbHandler.GetAdId(objectID);
+
+                        Intent2.putExtra("AD_ID",adID);
+
+                        //char letter = LetterGenerator(Name);
+
+                        Intent2.putExtra("Letter", Character.toString(letter));
+
+                        String collectedLetters = c.getString(9);
+
+
+
+                        collectedLetters = collectedLetters += letter;
+
+                        collectedLetters = orderWord(collectedLetters, Name);
+
+                            adTitle.setText(collectedLetters);
+
+                        dbHandler.UpdateColumn("collected_letters", collectedLetters, adID);
+
+                        if (collectedLetters.equals(Name)){
+                            Intent2.putExtra("status", "Redeem!");
+
+
+                        startActivityForResult(Intent2, 1);}
+                        return;
+                    }}
+
+                    Log.i("Loc", "collect ad: objectID=" + objectID);
+
+                    String firstLetter = Character.toString(letter);
+
+                    rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", 0, image, objectID, GameName, firstLetter);
+                    adID = dbHandler.selectLastInsearted();
+                    Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
+                    adTitle.setText(firstLetter);
+
+/*                    if (rowID != -1) {
+                        Intent intent = new Intent(CreateAdActivity.this, ContactInfoActivity.class);
+                        intent.putExtra("AD_ID", adID);
+                        intent.putExtra("myAd", false);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Error Inserting Data. Please Try Again", Toast.LENGTH_LONG).show();
+                    }*/
+
+                    return;
+                } else {
+                    // something went wrong
+                }
+               }
+
+
+        });
+        return;
+    }
+
+
+
+
+       else
+        {
             // User is creating this add.
             // Check ShredPreferenced and auto fill user information if available
 
@@ -127,7 +279,6 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                 phoneNumber.setText(UserPhoneNumber);
         }
 
-        // Capture button clicks
         uploadImageButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View arg0) {
@@ -144,8 +295,45 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         });
+
+    }
+    /**
+     * helper to set retrieve objects : retrieveResult and retrieveImageMap
+     */
+    public void RetrieveParseObjects(final String ObjectID, GetCallback<ParseObject> callback) {
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Ad_info_test2");
+        query.whereEqualTo("objectId", ObjectID);
+        query.getFirstInBackground(callback);
+
+
     }
 
+    public char LetterGenerator(String alphabet){
+        //Randomly select a letter from the Game Word
+
+        final int N = alphabet.length();
+
+        Random r = new Random();
+        return alphabet.charAt(r.nextInt(N));
+    }
+
+    public String orderWord(String collectedLetters, String word){
+        //Randomly select a letter from the Game Word
+
+        String result = "";
+
+        for (int i = 0; i < word.length(); i++){
+            char c = word.charAt(i);
+            int found = collectedLetters.indexOf(c);
+            if (found >= 0)
+                result += c;
+
+            //Process char
+        }
+
+        return result;
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -170,9 +358,16 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
         if (id == R.id.action_settings) {
             return true;
         }
+        else if(id == android.R.id.home){
 
-        return super.onOptionsItemSelected(item);
-    }
+            if(isMyAd == 0){
+                Intent intent = new Intent(this, ContactListActivity.class);
+                startActivity(intent);
+            return true;
+            }
+
+
+    }  return super.onOptionsItemSelected(item);}
 
     @Override
     public void onClick(View v) {
@@ -184,11 +379,11 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
 
 
                 String Name = fullName.getText().toString();
-                String phone = phoneNumber.getText().toString();
+               // String phone = phoneNumber.getText().toString();
                 String Title = adTitle.getText().toString();
                 String Details = adDetails.getText().toString();
                 String ImageUrl = adImageUrl.getText().toString();
-
+                String GameName = "Lucky Letters!";
 
                 // Do the following if you are creating an ad
                 if(isMyAd == 1) {
@@ -217,7 +412,11 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                     try {
                         file.save();
                     } catch (ParseException e) {
+                        Toast.makeText(CreateAdActivity.this, "Connect to the Internet !",
+                                Toast.LENGTH_SHORT).show();
+
                         e.printStackTrace();
+                        return;
                     }
 
                     //IMAGE URL, Moataz you can use this url to download a copy to the database
@@ -239,8 +438,11 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                     imgupload.put("ImageFile", imageUploadFile);
                     imgupload.put("Name", Name);
                     imgupload.put("Title", Title);
-                    imgupload.put("Phone", phone);
+                    //imgupload.put("Phone", phone);
                     imgupload.put("Details", Details);
+                    imgupload.put("GameName", GameName);
+                    imgupload.put("ImageUrl",ImageUrl);
+
                     // Create the class and the columns
                     try {
                         imgupload.save();
@@ -264,23 +466,14 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                 long rowID;
                 long adID;
                 dbHandler.open();
-
-                if(isMyAd ==0 ){
-
-                    RetrieveParseObjects(objectID);
+                Cursor c;
 
 
-                    Log.i("Loc", "collect ad: objectID="+ objectID);
-                    rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, phone, isMyAd,image,objectID);
+
+
+                    Log.i("Loc", "create ad: objectID=" + objectID);
+                    rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", isMyAd,image,objectID,GameName,"");
                     adID = dbHandler.selectLastInsearted();
-
-                }
-                else{
-
-                    Log.i("Loc", "create ad: objectID="+ objectID);
-                    rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, phone, isMyAd,image,objectID);
-                    adID = dbHandler.selectLastInsearted();
-                }
                 dbHandler.close();
 
                 Toast.makeText(getApplicationContext(), "Inserted to AD_ID="+adID, Toast.LENGTH_LONG).show();
@@ -288,6 +481,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                 if (rowID != -1) {
                     Intent intent = new Intent(this, ContactInfoActivity.class);
                     intent.putExtra("AD_ID", adID);
+                    intent.putExtra("myAd", true);
                     startActivity(intent);
                 }
                 else{
@@ -324,40 +518,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
             }
         }
     }
-    /**
-     * helper to set retrieve objects : retrieveResult and retrieveImageMap
-     */
-    public void RetrieveParseObjects(String ObjectID) {
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Ad_info_test2");
-        query.getInBackground(ObjectID, new GetCallback<ParseObject>() {
-            public void done(ParseObject object, ParseException e) {
-                if (e == null) {
-                    // object will be your imgupload ParseObject
-                    retrieveObject = object;
-
-                    // get the image bitmap from retrieveResult
-                    ParseFile imageFile = (ParseFile) retrieveObject.get("ImageFile");
-
-
-                    imageFile.getDataInBackground(new GetDataCallback() {
-                        public void done(byte[] data, ParseException e) {
-                            if (e == null) {
-                                // data has the bytes for the image
-                                retrieveImage = data;
-                                adImage.setImageBitmap(dbHandler.getImage(retrieveImage));
-                            } else {
-                                // something went wrong
-                            }
-                        }
-                    });
-                } else {
-                    // something went wrong
-                }
-            }
-        });
-
-    }
     /**
      * helper to retrieve the path of an image URI
      */

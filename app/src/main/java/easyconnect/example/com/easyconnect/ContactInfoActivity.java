@@ -1,6 +1,7 @@
 package easyconnect.example.com.easyconnect;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,7 +18,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.graphics.Color;
 
+import com.google.android.gms.vision.barcode.Barcode;
 import com.squareup.picasso.Picasso;
 
 
@@ -28,9 +31,13 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
     TextView phone_number;
     ImageView ad_pic;
     String object_id;
+    TextView collected_letters;
+
 
     DBHandler dbHandler;
     Cursor c;
+
+    boolean isMyAd;
 
     long adID;
 
@@ -41,8 +48,9 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
 
         dbHandler = new DBHandler(getBaseContext());
         Intent intent = getIntent();
-        boolean isMyAd = intent.getBooleanExtra("myAd", false);
-        adID = intent.getLongExtra("AD_ID", 1L);
+        isMyAd = intent.getBooleanExtra("myAd", false);
+        Bundle extras = getIntent().getExtras();
+        adID = extras.getLong("AD_ID", 1L);
         dbHandler.open();
         c = dbHandler.searchAdbyID(adID);
         c.moveToFirst();
@@ -53,33 +61,93 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
         FloatingActionButton nfcTag = (FloatingActionButton) findViewById(R.id.nfcTag);
         nfcTag.setOnClickListener(this);
 
+        //intializing deal accepted notice
+        FloatingActionButton Redeem_button = (FloatingActionButton) findViewById(R.id.redeem_button);
+        Redeem_button.setOnClickListener(this);
+
+
+        //intialize statistics button
+        FloatingActionButton stat_button = (FloatingActionButton) findViewById(R.id.statistics);
+        stat_button.setOnClickListener(this);
+
+
         // moving nfc beam programming page
-        FloatingActionButton nfcBeam = (FloatingActionButton) findViewById(R.id.nfcBeam);
-        nfcBeam.setOnClickListener(this);
+       /* FloatingActionButton nfcBeam = (FloatingActionButton) findViewById(R.id.nfcBeam);
+        nfcBeam.setOnClickListener(this);*/
 
         // initialize all User Info
-        contact_name = (TextView) findViewById(R.id.ad_title);
-        contact_name.setText(c.getString(0));
 
+        //check parent to see whether the info is being displayed on NFC tap event or contact list
+        //select event
+        ComponentName caller = getCallingActivity();
+
+        //statistics = (Button) findViewById(R.id.statistics);
+       // statistics.setVisibility(View.GONE);
+
+
+        collected_letters =  (TextView) findViewById(R.id.collected_letters);
+        if(c.getString(9).equals("") || c.getString(9)==null)
+            collected_letters.setText("N/A");
+        else
+        collected_letters.setText(c.getString(9));
+
+
+        //check to see if the envoking activity was an NFC tap event
+        if(caller != null && caller.getClassName().compareTo("easyconnect.example.com.easyconnect.CreateAdActivity") == 0)
+        {
+            String test = "";
+            if(extras.containsKey("Letter"))
+            test = extras.getString("Letter");
+            contact_name = (TextView) findViewById(R.id.ad_title);
+
+            if(extras.containsKey("status")){
+            contact_name.setText("REDEEM!");
+                Redeem_button.setVisibility(View.VISIBLE);
+            contact_name.setBackgroundResource(R.color.redeem_color);}
+            else
+                contact_name.setText(test);
+
+        }
+        else
+        {
+
+        contact_name = (TextView) findViewById(R.id.ad_title);
+            if(c.getString(1).equals(c.getString(9)))
+            {
+                contact_name.setText("REDEEM!");
+                Redeem_button.setVisibility(View.VISIBLE);
+                contact_name.setBackgroundResource(R.color.redeem_color);}
+            else
+
+        contact_name.setText(c.getString(0));
+        }
+
+        contact_name = (TextView) findViewById(R.id.game_name);
+        contact_name.setText("Lucky Letters!");
+
+        //Here we are actually updating the game word The id Contact_name refers to the game word
         contact_name = (TextView) findViewById(R.id.contact_name);
         contact_name.setText(c.getString(1));
 
         ad_description = (TextView) findViewById(R.id.ad_description);
         ad_description.setText(c.getString(2));
 
-        phone_number = (TextView) findViewById(R.id.phone_number);
-        phone_number.setText(c.getString(4));
+      /* phone_number = (TextView) findViewById(R.id.phone_number);
+        phone_number.setText(c.getString(4));*/
 
         //sets ad image to image that has been saved to sql database
         ad_pic = (ImageView) findViewById(R.id.ad_pic);
+
         byte[] image = c.getBlob(6);
         Log.i("URL 5", c.getString(3));
 
-        /*
+
         if (image != null){
             ad_pic.setImageBitmap(dbHandler.getImage(image));
-        }*/
-        Picasso.with(getApplicationContext()).load( c.getString(3) ).into(ad_pic);
+        }
+
+      /*  if (c.getString(3) != null || !c.getString(3).equals("")  )
+        Picasso.with(getApplicationContext()).load( c.getString(3) ).into(ad_pic);*/
 
         dbHandler.close();
 
@@ -102,9 +170,13 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
         // Show only for my ads
         // By default this button in invisible
         if (isMyAd) {
-            // SHOW the button
-            mapInfoButton.setVisibility(View.VISIBLE);
+            // never show map button
+        /*mapInfoButton.setVisibility(View.VISIBLE);*/
             nfcTag.setVisibility(View.VISIBLE);
+            stat_button.setVisibility(View.VISIBLE);
+            TextView collected_letters_title= (TextView) findViewById(R.id.textView4);
+            collected_letters_title.setVisibility(View.GONE);
+            collected_letters.setVisibility(View.GONE);
             object_id = intent.getStringExtra("Object_ID");
         }
     }
@@ -146,18 +218,44 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
             case R.id.nfcTag: {
                 Intent intent = new Intent(ContactInfoActivity.this, NfcTagWriterActivity.class);
                 // Format here is [contact_name]|[phone_number]|[ad_title]|[ad_description]||[ad_objectID][image_url]
-                intent.putExtra("AD_Info", c.getString(1) + "|" + c.getString(4) + "|" + c.getString(0) + "|" + c.getString(2) + "|" + c.getString(7) + "|" + c.getString(3));
+                //This way we are storing the word
+                intent.putExtra("AD_Info", c.getString(1) + "|"+ c.getString(7) );
                 startActivityForResult(intent, 0);
                 break;
             }
+           case R.id.redeem_button: {
+               new AlertDialog.Builder(this)
+                       .setTitle("Redeem Cupon")
+                       .setMessage("Redeem will delete Coupon, make sure restaurant staff see it first!")
+                       .setPositiveButton("Redeem", new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int which) {
+                               // continue with delete
+                               // delete the advertisement from the database
+                               dbHandler.open();
+                               dbHandler.deleteAd(adID);
+                               dbHandler.close();
+                               // After deleting the advertisement from the db, go back to the ListActivity
 
-           case R.id.nfcBeam: {
-               Intent intent = new Intent(ContactInfoActivity.this, NfcBeamWriterActivity.class);
+                               Intent intent = new Intent(ContactInfoActivity.this,ContactListActivity.class);
+
+                               startActivityForResult(intent, 0);
+                           }
+                       })
+                       .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int which) {
+                               // do nothing
+                           }
+                       })
+                       .setIcon(R.drawable.check_icon)
+                       .show();
+           }
+         /*  case R.id.statistics: {
+               Intent intent = new Intent(ContactInfoActivity.this, MyStatistics.class);
                // Format here is [contact_name]|[phone_number]|[ad_title]|[ad_description]||[ad_objectID][image_url]
                intent.putExtra("AD_Info", c.getString(1) + "|" + c.getString(4) + "|" + c.getString(0) + "|" + c.getString(2) + "|" + c.getString(7) + "|" + c.getString(3));
                startActivityForResult(intent, 0);
                break;
-           }
+           }*/
         }
     }
 
@@ -189,6 +287,17 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
 
                 return true;
             }
+            else if(id == android.R.id.home){
+
+                if(isMyAd == true){
+                    Intent intent = new Intent(this, MyAdsListActivity.class);
+                startActivity(intent);}
+                else{
+                // After viewing the advertisement from the db, go back to the ListActivity
+                Intent intent = new Intent(this, ContactListActivity.class);
+            startActivity(intent);}
+
+            return true;}
 
             return super.onOptionsItemSelected(item);
         }

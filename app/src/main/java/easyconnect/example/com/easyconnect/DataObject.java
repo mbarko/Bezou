@@ -9,6 +9,7 @@ public class DataObject {
 
     private String mText1;
     private String mText2;
+    //Game type
     private Long ad_id;
     private String imageURL;
     private String object_id;
@@ -35,6 +36,9 @@ public class DataObject {
     }
 
     public void setmText2(String mText2) { this.mText2 = mText2; }
+
+
+
 
     public Long getadId() {
         return ad_id;

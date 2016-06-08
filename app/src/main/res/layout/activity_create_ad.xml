@@ -15,7 +15,10 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:overScrollMode="never"
-        android:layout_height="match_parent">
+        android:layout_height="567dp"
+        android:fillViewport="true"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
 
         <!--Fix For "Scrollview can host only one direct child"-->
         <!--http://stackoverflow.com/questions/16699772/scrollview-can-host-only-one-direct-child-->
@@ -28,14 +31,16 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="1">
+                android:layout_height="match_parent"
+                >
 
                 <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:layout_height="250dp"
+                    android:adjustViewBounds="true"
+
                     android:id="@+id/adImage"
-                    android:src="@drawable/default_img" />
+                    android:src="@drawable/hero_pdt_value_au" />
 
             </LinearLayout>
 
@@ -51,7 +56,7 @@
                     android:layout_width="32dip"
                     android:layout_height="32dip"
                     android:layout_margin="15dp"
-                    android:src="@drawable/person_icon" />
+                    android:src="@drawable/word_icon" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -62,17 +67,18 @@
                         android:id="@+id/fullName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:ems="10"
+                        android:ems="0"
                         android:inputType="textPersonName"
-                        android:text="Name" />
+                        android:text="Game Word"
+                        android:cursorVisible="true"
+                        />
 
                 </LinearLayout>
             </LinearLayout>
 
 
             <!--Phone Number-->
-            <LinearLayout
+           <!-- <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
@@ -90,12 +96,13 @@
                     android:id="@+id/phoneNumber"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:ems="10"
+                    android:ems="0"
                     android:inputType="textPersonName"
-                    android:text="Phone Number" />
+                    android:text="Phone Number"
 
-            </LinearLayout>
+                    android:cursorVisible="false"/>
+
+            </LinearLayout>-->
 
             <!--AD Title-->
             <LinearLayout
@@ -117,9 +124,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:ems="10"
+                    android:ems="0"
                     android:inputType="textPersonName"
-                    android:text="Ad Title" />
+                    android:text="Ad Title"
+                    android:cursorVisible="true"/>
 
             </LinearLayout>
 
@@ -143,12 +151,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:ems="10"
+                    android:ems="0"
                     android:inputType="textPersonName"
-                    android:text="Ad Details" />
+                    android:text="Ad Details"
+                    android:cursorVisible="false"/>
 
             </LinearLayout>
+            <!--Image Upload-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_marginLeft="20dp"
+                android:orientation="horizontal">
 
+                <Button
+                    android:id="@+id/uploadbtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="@string/uploadbtn" />
+
+            </LinearLayout>
             <!--AD Image Url-->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -169,28 +193,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:ems="10"
+                    android:ems="0"
                     android:inputType="textPersonName"
-                    android:text="" />
+                    android:text=""
+                    android:cursorVisible="true"/>
 
             </LinearLayout>
 
-            <!--Image Upload-->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="5dp"
-                android:layout_marginLeft="20dp"
-                android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/uploadbtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="@string/uploadbtn" />
-
-            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
@@ -211,8 +221,9 @@
         android:id="@+id/create_ad_button"
         android:layout_width="64dip"
         android:layout_height="64dip"
+
         android:src="@drawable/check_icon"
-        circle:backgroundTint="#009688"
+        circle:backgroundTint="#F06292"
         android:layout_gravity="right|bottom" />
 
 </FrameLayout>

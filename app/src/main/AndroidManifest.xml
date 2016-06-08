@@ -44,7 +44,7 @@
         <activity
             android:name=".ContactInfoActivity"
             android:label="@string/title_activity_contact_info"
-            android:parentActivityName=".ContactListActivity" />
+            android:parentActivityName=".MyAdsListActivity" />
         <activity
             android:name=".NfcTagWriterActivity"
             android:label="@string/title_activity_nfc_tagwriter"
@@ -55,12 +55,13 @@
         android:parentActivityName=".ContactInfoActivity" />
         <activity
             android:name=".MyAdsListActivity"
-            android:label="@string/title_activity_my_ads_list">
+            android:label="@string/title_activity_my_ads_list"
+            android:parentActivityName=".ContactListActivity">
         </activity>
         <activity
             android:name=".MyProfileActivity"
             android:label="@string/title_activity_my_profile"
-            android:parentActivityName=".ContactListActivity" />
+            android:parentActivityName=".MyAdsListActivity" />
         <activity
             android:name=".NfcTagReaderActivity"
             android:label="@string/title_activity_nfc_tagreader"
@@ -76,7 +77,7 @@
         <activity
             android:name=".CreateAdActivity"
             android:label="@string/title_activity_create_ad"
-            android:parentActivityName=".ContactListActivity">
+            android:parentActivityName=".MyAdsListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="easyconnect.example.com.easyconnect.ContactListActivity" />

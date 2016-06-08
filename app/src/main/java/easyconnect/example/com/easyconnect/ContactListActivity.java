@@ -128,6 +128,7 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
 
                 if (isMyAd == 0) {
                     // Title, Description, Ad id (in local databse), Image URL, Object ID (in Parse)
+                    // a crash occurs when we don't input an images URL
                     DataObject obj = new DataObject(c.getString(1), c.getString(3), c.getLong(0), c.getString(4), c.getString(8));
                     results.add(index, obj);
                     index++;
@@ -151,7 +152,13 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
             // }
             case R.id.createAd_button: {
                 Intent intent = new Intent(this, CreateAdActivity.class);
-                startActivity(intent);
+                intent.putExtra("contact_name","fk");
+/*        intent.putExtra("phone_number",separated[1]);
+        intent.putExtra("ad_title",separated[2]);
+        intent.putExtra("ad_description", separated[3]);*/
+                intent.putExtra("ad_objectID","gbUVu0qsqi");
+                //intent.putExtra("image_url", "");
+                startActivityForResult(intent, 0);
                 break;
             }
         }
