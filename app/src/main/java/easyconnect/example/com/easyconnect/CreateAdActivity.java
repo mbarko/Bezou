@@ -90,33 +90,25 @@ char letter;
         ComponentName caller = getCallingActivity();
 
         //check the caller activity
-       if(caller != null && caller.getClassName().compareTo("easyconnect.example.com.easyconnect.NfcTagReaderActivity") == 0)
+      if(caller != null && caller.getClassName().compareTo("easyconnect.example.com.easyconnect.NfcTagReaderActivity") == 0)
     {
             //Set global identifier to 0 i.e its not my ad
             isMyAd = 0;
             //[contact_name]|[phone_number]|[ad_title]|[ad_description]|[image_url]
             // No editing permission In the case of Extract from NFC
          letter = LetterGenerator(intent.getStringExtra("contact_name"));
-        setTitle("You Got '" +Character.toString(letter)+"' !");
+        setTitle("You Got '" + Character.toString(letter) + "' !");
+
 
             fullName.setText(intent.getStringExtra("contact_name"));
         fullName.setEnabled(false);
             adTitle.setEnabled(false);
             adDetails.setEnabled(false);
             adImageUrl.setEnabled(false);
-        /*
-            phoneNumber.setText(intent.getStringExtra("phone_number"));
-            phoneNumber.setEnabled(false);
-            phoneNumber.setVisibility(View.GONE);
-            adTitle.setText(intent.getStringExtra("ad_title"));
-            adTitle.setEnabled(false);
-            adDetails.setText(intent.getStringExtra("ad_description"));
-            adDetails.setEnabled(false);
-            // for now just hard code the default image url , otherwise picassa will crash
-            adImageUrl.setText(intent.getStringExtra("image_url"));
-            adImageUrl.setEnabled(false);*/
-            uploadImageButton.setVisibility(View.GONE);
-            createAdButton.setVisibility(View.GONE);
+
+
+        createAdButton.setVisibility(View.GONE);
+
 
             //If we are using NFC the Image is getting loaded from parse. This function sets the retrieveParseObject and retrieveImage
             //In addition to initializing the view
@@ -132,9 +124,7 @@ char letter;
                     //get records from parse
                     fullName.setText(retrieveObject.getString("Name"));
 
-                    /*phoneNumber.setText(intent.getStringExtra("phone_number"));
-                    phoneNumber.setEnabled(false);
-                    phoneNumber.setVisibility(View.GONE);*/
+
                     adTitle.setText(retrieveObject.getString("Title"));
 
                     adDetails.setText(retrieveObject.getString("Details"));
@@ -219,11 +209,15 @@ char letter;
 
                         dbHandler.UpdateColumn("collected_letters", collectedLetters, adID);
 
+                           retrieveObject.put("TapStat",retrieveObject.getInt("TapStat")+1);
+
                         if (collectedLetters.equals(Name)){
                             Intent2.putExtra("status", "Redeem!");
-
+                            retrieveObject.put("RedeemStat", retrieveObject.getInt("RedeemStat") + 1);
 
                         startActivityForResult(Intent2, 1);}
+
+                            retrieveObject.saveInBackground();
                         return;
                     }}
 
@@ -235,6 +229,8 @@ char letter;
                     adID = dbHandler.selectLastInsearted();
                     Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
                     adTitle.setText(firstLetter);
+                    retrieveObject.put("TapStat", retrieveObject.getInt("TapStat") + 1);
+                    retrieveObject.saveInBackground();
 
 /*                    if (rowID != -1) {
                         Intent intent = new Intent(CreateAdActivity.this, ContactInfoActivity.class);
@@ -261,6 +257,7 @@ char letter;
 
        else
         {
+        uploadImageButton.setVisibility(View.VISIBLE);
             // User is creating this add.
             // Check ShredPreferenced and auto fill user information if available
 
@@ -439,9 +436,12 @@ char letter;
                     imgupload.put("Name", Name);
                     imgupload.put("Title", Title);
                     //imgupload.put("Phone", phone);
-                    imgupload.put("Details", Details);
+                    imgupload.put("De//ails", Details);
                     imgupload.put("GameName", GameName);
                     imgupload.put("ImageUrl",ImageUrl);
+                    imgupload.put("TapStat",0);
+                    imgupload.put("RedeemStat",0);
+
 
                     // Create the class and the columns
                     try {

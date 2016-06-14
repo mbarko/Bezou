@@ -170,7 +170,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="@string/uploadbtn" />
+                    android:text="@string/uploadbtn"
+                    android:visibility="invisible"/>
 
             </LinearLayout>
             <!--AD Image Url-->
@@ -186,6 +187,7 @@
                     android:layout_width="32dip"
                     android:layout_height="32dip"
                     android:layout_margin="15dp"
+                    android:visibility="invisible"/>
                     android:src="@drawable/camera_icon"/>
 
                 <EditText
@@ -196,6 +198,7 @@
                     android:ems="0"
                     android:inputType="textPersonName"
                     android:text=""
+                    android:visibility="invisible"/>
                     android:cursorVisible="true"/>
 
             </LinearLayout>

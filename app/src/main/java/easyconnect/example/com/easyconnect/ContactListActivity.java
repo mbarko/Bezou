@@ -152,11 +152,11 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
             // }
             case R.id.createAd_button: {
                 Intent intent = new Intent(this, CreateAdActivity.class);
-                intent.putExtra("contact_name","fk");
+                intent.putExtra("contact_name","tap");
 /*        intent.putExtra("phone_number",separated[1]);
         intent.putExtra("ad_title",separated[2]);
         intent.putExtra("ad_description", separated[3]);*/
-                intent.putExtra("ad_objectID","gbUVu0qsqi");
+                intent.putExtra("ad_objectID","0L5mkIaJy4");
                 //intent.putExtra("image_url", "");
                 startActivityForResult(intent, 0);
                 break;

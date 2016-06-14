@@ -68,7 +68,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
 
         //intialize statistics button
         FloatingActionButton stat_button = (FloatingActionButton) findViewById(R.id.statistics);
-        stat_button.setOnClickListener(this);
+
 
 
         // moving nfc beam programming page
@@ -174,6 +174,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
         /*mapInfoButton.setVisibility(View.VISIBLE);*/
             nfcTag.setVisibility(View.VISIBLE);
             stat_button.setVisibility(View.VISIBLE);
+            stat_button.setOnClickListener(this);
             TextView collected_letters_title= (TextView) findViewById(R.id.textView4);
             collected_letters_title.setVisibility(View.GONE);
             collected_letters.setVisibility(View.GONE);
@@ -248,14 +249,15 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
                        })
                        .setIcon(R.drawable.check_icon)
                        .show();
-           }
-         /*  case R.id.statistics: {
-               Intent intent = new Intent(ContactInfoActivity.this, MyStatistics.class);
-               // Format here is [contact_name]|[phone_number]|[ad_title]|[ad_description]||[ad_objectID][image_url]
-               intent.putExtra("AD_Info", c.getString(1) + "|" + c.getString(4) + "|" + c.getString(0) + "|" + c.getString(2) + "|" + c.getString(7) + "|" + c.getString(3));
-               startActivityForResult(intent, 0);
                break;
-           }*/
+           }
+          case R.id.statistics: {
+
+              Intent intent = new Intent(ContactInfoActivity.this,Statistics.class);
+              intent.putExtra("Object_ID", c.getString(7));
+              startActivityForResult(intent, 0);
+              break;
+           }
         }
     }
 

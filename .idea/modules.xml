@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Cupons.iml" filepath="$PROJECT_DIR$/Cupons.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Bezou.iml" filepath="$PROJECT_DIR$/Bezou.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/ndeftools/ndeftools.iml" filepath="$PROJECT_DIR$/ndeftools/ndeftools.iml" />
       <module fileurl="file://$PROJECT_DIR$/ndeftoolsboilerplate/ndeftoolsboilerplate.iml" filepath="$PROJECT_DIR$/ndeftoolsboilerplate/ndeftoolsboilerplate.iml" />

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="114dp"
+            android:id="@+id/editText"
+            android:layout_gravity="center_horizontal"
+            android:text="# Of Taps"
+            android:textAlignment="gravity"
+            android:textSize="50dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:background="#26A69A"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="114dp"
+            android:id="@+id/stat_1"
+            android:layout_gravity="center_horizontal"
+            android:text="No Connection"
+            android:textAlignment="gravity"
+            android:textSize="50dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="#26A69A" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/editText3"
+            android:layout_gravity="center_horizontal"
+            android:text="# Of Redemptions"
+            android:textAlignment="gravity"
+            android:textSize="50dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="#FffFFF"
+            android:background="#F06292" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="114dp"
+            android:id="@+id/stat_2"
+            android:layout_gravity="center_horizontal"
+            android:textAlignment="gravity"
+            android:textSize="50dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="#F06292" />
+    </LinearLayout>
+
+</LinearLayout>
