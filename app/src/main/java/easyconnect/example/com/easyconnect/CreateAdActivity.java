@@ -61,8 +61,10 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
     // the adImage ImageView in bytes
     byte[] image;
     public boolean done = false;
-char letter;
+    char letter;
     SharedPreferences sharedPrefs;
+
+    boolean redeemstat,tapstat,promotionExists=false ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +103,8 @@ char letter;
 
 
             fullName.setText(intent.getStringExtra("contact_name"));
+        fullName.getBackground().clearColorFilter();
+        fullName.setSelected(false);
         fullName.setEnabled(false);
             adTitle.setEnabled(false);
             adDetails.setEnabled(false);
@@ -149,115 +153,68 @@ char letter;
                     });
 
 
-                    // RetrieveParseObjects(objectID);
-
-                    String Name = fullName.getText().toString();
-                    // String phone = phoneNumber.getText().toString();
-                    String Title = adTitle.getText().toString();
-                    String Details = adDetails.getText().toString();
-                    String ImageUrl = adImageUrl.getText().toString();
-                    String GameName = "Lucky Letters!";
-
-
-                    Cursor c;
-                    long rowID;
-                    long adID;
-                    dbHandler.open();
+                    if(!promotionExists){
+                        String Name = fullName.getText().toString();
+                        // String phone = phoneNumber.getText().toString();
+                        String Title = adTitle.getText().toString();
+                        String Details = adDetails.getText().toString();
+                        String ImageUrl = adImageUrl.getText().toString();
+                        String GameName = "Lucky Letters!";
 
 
-                    c = dbHandler.searchAdbyObj_ID(objectID);
+                        Cursor c;
+                        long rowID;
+                        long adID;
+                        dbHandler.open();
 
-                    c.moveToFirst();
 
+                        c = dbHandler.searchAdbyObj_ID(objectID);
 
+                        c.moveToFirst();
+                        Log.i("Loc", "collect ad: objectID=" + objectID);
 
-                    if(c!= null  && c.getCount() > 0){
-                    if( c.getInt(5) == 1 && c.getCount() > 1)
-                    {
-                        Toast.makeText(CreateAdActivity.this, "It's your promotion!",
-                                Toast.LENGTH_SHORT).show();
-                        c.moveToNext();
+                        String firstLetter = Character.toString(letter);
 
+                        rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", 0, image, objectID, GameName, firstLetter);
+                        adID = dbHandler.selectLastInsearted();
+                        Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
+                        adTitle.setText(firstLetter);
+
+                        tapstat = true;
                     }
 
 
-                        if(c.getInt(5) != 1) {
-                        //The Promotion is already stored on the users mobile
-                        Log.i("Loc", "Object objectID=" + objectID + " Exists");
-                        Toast.makeText(CreateAdActivity.this, objectID + " objectID Exists",
-                                Toast.LENGTH_SHORT).show();
-
-                        Intent Intent2 = new Intent(CreateAdActivity.this, ContactInfoActivity.class);
-                        adID = dbHandler.selectLastInsearted();
-                        adID = dbHandler.GetAdId(objectID);
-
-                        Intent2.putExtra("AD_ID",adID);
-
-                        //char letter = LetterGenerator(Name);
-
-                        Intent2.putExtra("Letter", Character.toString(letter));
-
-                        String collectedLetters = c.getString(9);
 
 
+if (redeemstat == true){ retrieveObject.put("RedeemStat", retrieveObject.getInt("RedeemStat") + 1);
+    retrieveObject.put("TapStat",retrieveObject.getInt("TapStat")+1);}
+                    else
+if(tapstat == true)
+    retrieveObject.put("TapStat",retrieveObject.getInt("TapStat")+1);
 
-                        collectedLetters = collectedLetters += letter;
-
-                        collectedLetters = orderWord(collectedLetters, Name);
-
-                            adTitle.setText(collectedLetters);
-
-                        dbHandler.UpdateColumn("collected_letters", collectedLetters, adID);
-
-                           retrieveObject.put("TapStat",retrieveObject.getInt("TapStat")+1);
-
-                        if (collectedLetters.equals(Name)){
-                            Intent2.putExtra("status", "Redeem!");
-                            retrieveObject.put("RedeemStat", retrieveObject.getInt("RedeemStat") + 1);
-
-                        startActivityForResult(Intent2, 1);}
-
-                            retrieveObject.saveInBackground();
-                        return;
-                    }}
-
-                    Log.i("Loc", "collect ad: objectID=" + objectID);
-
-                    String firstLetter = Character.toString(letter);
-
-                    rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", 0, image, objectID, GameName, firstLetter);
-                    adID = dbHandler.selectLastInsearted();
-                    Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
-                    adTitle.setText(firstLetter);
-                    retrieveObject.put("TapStat", retrieveObject.getInt("TapStat") + 1);
                     retrieveObject.saveInBackground();
-
-/*                    if (rowID != -1) {
-                        Intent intent = new Intent(CreateAdActivity.this, ContactInfoActivity.class);
-                        intent.putExtra("AD_ID", adID);
-                        intent.putExtra("myAd", false);
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Error Inserting Data. Please Try Again", Toast.LENGTH_LONG).show();
-                    }*/
-
                     return;
+                    // RetrieveParseObjects(objectID);
+
                 } else {
+                    return;
+
                     // something went wrong
                 }
                }
 
 
         });
+
+      promotionExists = updateMyWord();
         return;
     }
 
 
 
 
-       else
-        {
-        uploadImageButton.setVisibility(View.VISIBLE);
+       else {
+          uploadImageButton.setVisibility(View.VISIBLE);
             // User is creating this add.
             // Check ShredPreferenced and auto fill user information if available
 
@@ -294,6 +251,8 @@ char letter;
         });
 
     }
+
+
     /**
      * helper to set retrieve objects : retrieveResult and retrieveImageMap
      */
@@ -306,6 +265,92 @@ char letter;
 
     }
 
+    //Function to update coupon status with out net
+    Boolean updateMyWord(){
+
+        String Name = fullName.getText().toString();
+        // String phone = phoneNumber.getText().toString();
+        String Title = adTitle.getText().toString();
+        String Details = adDetails.getText().toString();
+        String ImageUrl = adImageUrl.getText().toString();
+        String GameName = "Lucky Letters!";
+
+
+        Cursor c;
+        long rowID;
+        long adID;
+        dbHandler.open();
+
+
+        c = dbHandler.searchAdbyObj_ID(objectID);
+
+        c.moveToFirst();
+
+
+
+        if(c!= null  && c.getCount() > 0){
+            if( c.getInt(5) == 1 && c.getCount() > 1)
+            {
+                Toast.makeText(CreateAdActivity.this, "It's your promotion!",
+                        Toast.LENGTH_SHORT).show();
+                c.moveToNext();
+
+            }
+
+
+            if(c.getInt(5) != 1) {
+                //The Promotion is already stored on the users mobile
+                Log.i("Loc", "Object objectID=" + objectID + " Exists");
+                //Toast.makeText(CreateAdActivity.this, objectID + " objectID Exists",
+                //        Toast.LENGTH_SHORT).show();
+
+                Intent Intent2 = new Intent(CreateAdActivity.this, ContactInfoActivity.class);
+                adID = dbHandler.selectLastInsearted();
+                adID = dbHandler.GetAdId(objectID);
+
+                Intent2.putExtra("AD_ID",adID);
+
+                //char letter = LetterGenerator(Name);
+
+                Intent2.putExtra("Letter", Character.toString(letter));
+
+                String collectedLetters = c.getString(9);
+
+
+
+                collectedLetters = collectedLetters += letter;
+
+                collectedLetters = orderWord(collectedLetters, Name);
+
+                adTitle.setText(collectedLetters);
+
+                dbHandler.UpdateColumn("collected_letters", collectedLetters, adID);
+
+
+
+                if (collectedLetters.equals(Name)){
+                    Intent2.putExtra("status", "Redeem!");
+                   redeemstat = true;
+
+                    startActivityForResult(Intent2, 1);}
+
+
+                return true;
+            }}
+
+
+
+/*                    if (rowID != -1) {
+                        Intent intent = new Intent(CreateAdActivity.this, ContactInfoActivity.class);
+                        intent.putExtra("AD_ID", adID);
+                        intent.putExtra("myAd", false);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Error Inserting Data. Please Try Again", Toast.LENGTH_LONG).show();
+                    }*/
+
+        return false;
+    }
     public char LetterGenerator(String alphabet){
         //Randomly select a letter from the Game Word
 
@@ -373,6 +418,8 @@ char letter;
 
                 // Todo: Check which parent activity invoked this activity.
                 // Todo: if it is the NFC read, then make isMyAd=0 Done
+                Toast.makeText(CreateAdActivity.this, "This may take a couple of seconds. Hang in there !",
+                        Toast.LENGTH_SHORT).show();
 
 
                 String Name = fullName.getText().toString();
@@ -436,7 +483,7 @@ char letter;
                     imgupload.put("Name", Name);
                     imgupload.put("Title", Title);
                     //imgupload.put("Phone", phone);
-                    imgupload.put("De//ails", Details);
+                    imgupload.put("Details", Details);
                     imgupload.put("GameName", GameName);
                     imgupload.put("ImageUrl",ImageUrl);
                     imgupload.put("TapStat",0);
@@ -448,9 +495,19 @@ char letter;
                         imgupload.save();
                     } catch (ParseException e) {
                         e.printStackTrace();
+                        Toast.makeText(CreateAdActivity.this, "Connect to the Internet !",
+                                Toast.LENGTH_SHORT).show();
+
+                        e.printStackTrace();
+                        return;
                     }
 
                     objectID = imgupload.getObjectId();
+                    if(objectID == null){
+                        Toast.makeText(CreateAdActivity.this, "Connect to the Internet !",
+                                Toast.LENGTH_SHORT).show();
+
+                    return;}
                     Log.d("Bk:", "ObjectID:" + objectID);
 
 

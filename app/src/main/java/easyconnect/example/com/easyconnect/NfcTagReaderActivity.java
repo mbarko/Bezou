@@ -114,7 +114,7 @@ public class NfcTagReaderActivity extends NfcReaderActivity {
 
     @Override
     protected void readEmptyNdefMessage() {
-        toast(getString(org.ndeftools.boilerplate.R.string.readEmptyMessage));
+     //   toast(getString(org.ndeftools.boilerplate.R.string.readEmptyMessage));
 
         clearList();
     }
@@ -129,7 +129,7 @@ public class NfcTagReaderActivity extends NfcReaderActivity {
 
     @Override
     protected void readNonNdefMessage() {
-        toast(getString(org.ndeftools.boilerplate.R.string.readNonNDEFMessage));
+    //    toast(getString(org.ndeftools.boilerplate.R.string.readNonNDEFMessage));
 
         hideList();
     }
@@ -142,7 +142,7 @@ public class NfcTagReaderActivity extends NfcReaderActivity {
 
     @Override
     protected void onNfcStateEnabled() {
-        toast(getString(org.ndeftools.boilerplate.R.string.nfcAvailableEnabled));
+     //   toast(getString(org.ndeftools.boilerplate.R.string.nfcAvailableEnabled));
     }
 
     /**
@@ -153,7 +153,7 @@ public class NfcTagReaderActivity extends NfcReaderActivity {
 
     @Override
     protected void onNfcStateDisabled() {
-        toast(getString(org.ndeftools.boilerplate.R.string.nfcAvailableDisabled));
+    //    toast(getString(org.ndeftools.boilerplate.R.string.nfcAvailableDisabled));
     }
 
     /**
@@ -165,9 +165,9 @@ public class NfcTagReaderActivity extends NfcReaderActivity {
     @Override
     protected void onNfcStateChange(boolean enabled) {
         if(enabled) {
-            toast(getString(org.ndeftools.boilerplate.R.string.nfcAvailableEnabled));
+      //      toast(getString(org.ndeftools.boilerplate.R.string.nfcAvailableEnabled));
         } else {
-            toast(getString(org.ndeftools.boilerplate.R.string.nfcAvailableDisabled));
+       //     toast(getString(org.ndeftools.boilerplate.R.string.nfcAvailableDisabled));
         }
     }
 
@@ -179,7 +179,7 @@ public class NfcTagReaderActivity extends NfcReaderActivity {
 
     @Override
     protected void onNfcFeatureNotFound() {
-        toast(getString(org.ndeftools.boilerplate.R.string.noNfcMessage));
+      //  toast(getString(org.ndeftools.boilerplate.R.string.noNfcMessage));
     }
 
     /**

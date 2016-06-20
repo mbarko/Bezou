@@ -183,9 +183,9 @@ public class NfcBeamWriterActivity extends org.ndeftools.util.activity.NfcBeamWr
     @Override
     protected void readNdefMessage(Message message) {
         if (message.size() > 1) {
-            toast(getString(org.ndeftools.boilerplate.R.string.readMultipleRecordNDEFMessage));
+         //   toast(getString(org.ndeftools.boilerplate.R.string.readMultipleRecordNDEFMessage));
         } else {
-            toast(getString(org.ndeftools.boilerplate.R.string.readSingleRecordNDEFMessage));
+         //   toast(getString(org.ndeftools.boilerplate.R.string.readSingleRecordNDEFMessage));
         }
     }
 
@@ -195,7 +195,7 @@ public class NfcBeamWriterActivity extends org.ndeftools.util.activity.NfcBeamWr
 
     @Override
     protected void readEmptyNdefMessage() {
-        toast(getString(org.ndeftools.boilerplate.R.string.readEmptyMessage));
+      //  toast(getString(org.ndeftools.boilerplate.R.string.readEmptyMessage));
     }
 
     /**
@@ -206,7 +206,7 @@ public class NfcBeamWriterActivity extends org.ndeftools.util.activity.NfcBeamWr
 
     @Override
     protected void readNonNdefMessage() {
-        toast(getString(org.ndeftools.boilerplate.R.string.readNonNDEFMessage));
+      //  toast(getString(org.ndeftools.boilerplate.R.string.readNonNDEFMessage));
     }
 
     @Override
