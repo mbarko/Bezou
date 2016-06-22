@@ -247,7 +247,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
                                // do nothing
                            }
                        })
-                       .setIcon(R.drawable.check_icon)
+                       .setIcon(R.drawable.green_check_icon)
                        .show();
                break;
            }

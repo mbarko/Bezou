@@ -1,7 +1,9 @@
 package easyconnect.example.com.easyconnect;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -34,6 +36,9 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 
 import java.util.Random;
+
+import android.net.NetworkInfo;
+import android.net.ConnectivityManager;
 
 
 public class CreateAdActivity extends AppCompatActivity implements View.OnClickListener{
@@ -103,8 +108,8 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
 
 
             fullName.setText(intent.getStringExtra("contact_name"));
-        fullName.getBackground().clearColorFilter();
-        fullName.setSelected(false);
+     //   fullName.getBackground().clearColorFilter();
+      //  fullName.setSelected(false);
         fullName.setEnabled(false);
             adTitle.setEnabled(false);
             adDetails.setEnabled(false);
@@ -129,7 +134,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                     fullName.setText(retrieveObject.getString("Name"));
 
 
-                    adTitle.setText(retrieveObject.getString("Title"));
+                   // adTitle.setText(retrieveObject.getString("Title"));
 
                     adDetails.setText(retrieveObject.getString("Details"));
 
@@ -140,31 +145,21 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                     ParseFile imageFile = (ParseFile) retrieveObject.get("ImageFile");
 
 
-                    imageFile.getDataInBackground(new GetDataCallback() {
-                        public void done(byte[] data, ParseException e) {
-                            if (e == null) {
-                                // data has the bytes for the image
-                                retrieveImage = data;
-                                adImage.setImageBitmap(dbHandler.getImage(retrieveImage));
-                            } else {
-                                // something went wrong
-                            }
-                        }
-                    });
+
 
 
                     if(!promotionExists){
-                        String Name = fullName.getText().toString();
+                        final  String Name = fullName.getText().toString();
                         // String phone = phoneNumber.getText().toString();
-                        String Title = adTitle.getText().toString();
-                        String Details = adDetails.getText().toString();
-                        String ImageUrl = adImageUrl.getText().toString();
-                        String GameName = "Lucky Letters!";
+                        final String Title = adTitle.getText().toString();
+                        final   String Details = adDetails.getText().toString();
+                        final String ImageUrl = adImageUrl.getText().toString();
+                        final String GameName = "Lucky Letters!";
 
 
                         Cursor c;
-                        long rowID;
-                        long adID;
+
+
                         dbHandler.open();
 
 
@@ -173,14 +168,26 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                         c.moveToFirst();
                         Log.i("Loc", "collect ad: objectID=" + objectID);
 
-                        String firstLetter = Character.toString(letter);
+                       final String firstLetter = Character.toString(letter);
 
-                        rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", 0, image, objectID, GameName, firstLetter);
-                        adID = dbHandler.selectLastInsearted();
-                        Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
-                        adTitle.setText(firstLetter);
+                        imageFile.getDataInBackground(new GetDataCallback() {
+                            public void done(byte[] data, ParseException e) {
+                                if (e == null) {
+                                    // data has the bytes for the image
+                                    retrieveImage = data;
+                                    adImage.setImageBitmap(dbHandler.getImage(retrieveImage));
+                                    final long rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", 0, image, objectID, GameName, firstLetter);
+                                    final  long adID = dbHandler.selectLastInsearted();
+                                    Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
+                                    adTitle.setText(firstLetter);
 
-                        tapstat = true;
+                                    tapstat = true;
+                                } else {
+                                    // something went wrong
+                                }
+                            }
+                        });
+
                     }
 
 
@@ -207,6 +214,22 @@ if(tapstat == true)
         });
 
       promotionExists = updateMyWord();
+        if(promotionExists == false){
+           boolean isConnected = isNetworkAvailable();
+        if(isConnected == false ){new AlertDialog.Builder(this)
+                .setTitle("Tap Failed")
+                .setMessage("You Need Internet Connection For This Game !")
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(CreateAdActivity.this,ContactListActivity.class);
+
+                        startActivityForResult(intent, 0);
+                    }
+                })
+
+                .setIcon(R.drawable.alert_icon)
+                .show();}
+        }
         return;
     }
 
@@ -250,6 +273,13 @@ if(tapstat == true)
             }
         });
 
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 
@@ -327,6 +357,7 @@ if(tapstat == true)
                 dbHandler.UpdateColumn("collected_letters", collectedLetters, adID);
 
 
+                tapstat = true;
 
                 if (collectedLetters.equals(Name)){
                     Intent2.putExtra("status", "Redeem!");

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-
+    android:screenOrientation="portrait"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -104,7 +104,7 @@
                 android:adjustViewBounds="true"
                 android:id="@+id/ad_pic"
 
-                android:src="@drawable/hero_pdt_value_au"
+                android:src="@drawable/meal_icon"
 
 
                 android:layout_row="0"

@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission." />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- permission for GPS based location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- permission for Network based location -->
@@ -45,7 +46,8 @@
             android:name=".ContactInfoActivity"
             android:label="@string/title_activity_contact_info"
             android:parentActivityName=".MyAdsListActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+            android:windowSoftInputMode="adjustResize|stateHidden"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".NfcTagWriterActivity"
             android:label="@string/title_activity_nfc_tagwriter"
@@ -79,7 +81,8 @@
             android:name=".CreateAdActivity"
             android:label="@string/title_activity_create_ad"
             android:parentActivityName=".MyAdsListActivity"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="easyconnect.example.com.easyconnect.ContactListActivity" />

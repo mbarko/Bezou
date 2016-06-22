@@ -130,8 +130,8 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
                     String imgurl= c.getString(4);
                     // Title, Description, Ad id (in local databse), Image URL, Object ID (in Parse)
                     // a crash occurs when we don't input an images URL
-                    if(c.getString(4) == null)
-                      imgurl = "http://files.parsetfss.com/7a24e880-d07c-42ee-a844-127a1c917b02/tfss-b486563e-b6b5-40ab-94ad-246cfa64cbb9-adpic.jpg";
+                    if(c.getString(4).equals(null))
+                      imgurl = "http://files.parsetfss.com/7a24e880-d07c-42ee-a844-127a1c917b02/tfss-ee9a95ba-f1de-406c-8228-1c85e072d47d-adpic.jpg";
 
                     DataObject obj = new DataObject(c.getString(1), c.getString(3), c.getLong(0),imgurl, c.getString(8));
                     results.add(index, obj);
