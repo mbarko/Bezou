@@ -40,7 +40,9 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_list);
-
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.cash);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
         // initializing database
         dbHandler = new DBHandler(getBaseContext());
 
@@ -125,8 +127,9 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
 
                 // Only add my ads
                 if (isMyAd == 1) {
+                    byte[] image = c.getBlob(7);
                     // Title, Description, Ad id (in local databse), Image URL, Object ID (in Parse)
-                    DataObject obj = new DataObject(c.getString(1), c.getString(3), c.getLong(0), c.getString(4), c.getString(8));
+                    DataObject obj = new DataObject(c.getString(1), c.getString(3), c.getLong(0), c.getString(4), c.getString(8),c.getBlob(7));
                     results.add(index, obj);
                     index++;
                 }

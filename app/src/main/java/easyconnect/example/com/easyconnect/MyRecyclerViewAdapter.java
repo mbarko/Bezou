@@ -1,6 +1,7 @@
 package easyconnect.example.com.easyconnect;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
     private static String LOG_TAG = "MyRecyclerViewAdapter";
     private ArrayList<DataObject> mDataset;
     private static MyClickListener myClickListener;
+    DBHandler dbHandler;
 
     public static class DataObjectHolder extends RecyclerView.ViewHolder
             implements View
@@ -71,7 +73,9 @@ public class MyRecyclerViewAdapter extends RecyclerView
         holder.label.setText(String.valueOf(mDataset.get(position).getmText1()));
         holder.dateTime.setText(String.valueOf(mDataset.get(position).getmText2()));
         //Log.i("img", "position url=" + mDataset.get(position).getmText1());
-        Picasso.with(holder.getImageViewContext()).load(mDataset.get(position).getImageURL()).into(holder.imageViewIcon);
+        //Picasso.with(holder.getImageViewContext()).load(mDataset.get(position).getImageURL()).into(holder.imageViewIcon);
+        byte[] image =mDataset.get(position).getImage();
+        holder.imageViewIcon.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
     }
 
     public void addItem(DataObject dataObj, int index) {

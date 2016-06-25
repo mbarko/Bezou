@@ -30,6 +30,7 @@ public class NfcTagReaderActivity extends NfcReaderActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_nfc_tag_writer);
         //setContentView(org.ndeftools.boilerplate.R.layout.reader);
 
         // lets start detecting NDEF message using foreground mode
@@ -45,9 +46,9 @@ public class NfcTagReaderActivity extends NfcReaderActivity {
     @Override
     public void readNdefMessage(Message message) {
         if(message.size() > 1) {
-            toast(getString(org.ndeftools.boilerplate.R.string.readMultipleRecordNDEFMessage));
+          //  toast(getString(org.ndeftools.boilerplate.R.string.readMultipleRecordNDEFMessage));
         } else {
-            toast(getString(org.ndeftools.boilerplate.R.string.readSingleRecordNDEFMessage));
+          //  toast(getString(org.ndeftools.boilerplate.R.string.readSingleRecordNDEFMessage));
         }
 
         this.message = message;

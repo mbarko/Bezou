@@ -1,6 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+
     tools:context="easyconnect.example.com.easyconnect.ConfirmInfoActivity">
+    <!-- "Mark Favorite", should appear as action button if possible -->
+
     <item android:id="@+id/action_delete" android:title="@string/action_delete"
         android:orderInCategory="100" android:showAsAction="never" />
 </menu>

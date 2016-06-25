@@ -13,14 +13,15 @@ public class DataObject {
     private Long ad_id;
     private String imageURL;
     private String object_id;
+    private byte[] image;
 
-    DataObject(String text1, String text2 , Long id, String URL, String objid){
+    DataObject(String text1, String text2 , Long id, String URL, String objid,byte[] img){
         mText1 = text1;
         mText2 = text2;
         ad_id = id;
         imageURL = URL;
         object_id = objid;
-
+        image = img;
     }
 
     public String getmText1() {
@@ -47,4 +48,5 @@ public class DataObject {
     public String getImageURL() { return imageURL;}
 
     public String getObjectID() { return object_id;}
+    public byte[] getImage() { return image;}
 }

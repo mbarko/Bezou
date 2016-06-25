@@ -19,6 +19,7 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
+import android.support.v7.app.ActionBar;
 
 
 public class ContactListActivity extends AppCompatActivity implements View.OnClickListener {
@@ -41,6 +42,10 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_list);
+
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.mipmap.bizou_launcher);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         // initializing database
         dbHandler = new DBHandler(getBaseContext());
@@ -91,16 +96,23 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
             public void onItemClick(int position, View v) {
                 Log.i(LOG_TAG, " Clicked on Item " + position);
 
-                Intent intent = new Intent(ContactListActivity.this, ContactInfoActivity.class);
 
-                // Get the data of the item that user touches
-                //String contactName = ((TextView) v).getText().toString();
 
-                // put the dummy contact info as an extra field
-                DataObject cur = (DataObject) results.get(position);
+                    Intent intent = new Intent(ContactListActivity.this, ContactInfoActivity.class);
 
-                intent.putExtra("AD_ID", cur.getadId());
-                startActivity(intent);
+                    // Get the data of the item that user touches
+                    //String contactName = ((TextView) v).getText().toString();
+
+                    // put the dummy contact info as an extra field
+
+                try {
+                    DataObject cur = (DataObject) results.get(position);
+                    intent.putExtra("AD_ID", cur.getadId());
+                    startActivity(intent);
+                }catch (Exception e){e.printStackTrace();}
+
+
+
             }
         });
     }
@@ -133,7 +145,7 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
                     if(c.getString(4).equals(null))
                       imgurl = "http://files.parsetfss.com/7a24e880-d07c-42ee-a844-127a1c917b02/tfss-ee9a95ba-f1de-406c-8228-1c85e072d47d-adpic.jpg";
 
-                    DataObject obj = new DataObject(c.getString(1), c.getString(3), c.getLong(0),imgurl, c.getString(8));
+                    DataObject obj = new DataObject(c.getString(1), c.getString(3), c.getLong(0),imgurl, c.getString(8),c.getBlob(7));
                     results.add(index, obj);
                     index++;
                 }

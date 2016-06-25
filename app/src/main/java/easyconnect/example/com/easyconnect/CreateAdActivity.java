@@ -40,6 +40,10 @@ import java.util.Random;
 import android.net.NetworkInfo;
 import android.net.ConnectivityManager;
 
+import android.view.inputmethod.InputMethodManager;
+import android.view.MotionEvent;
+
+import android.widget.EditText;
 
 public class CreateAdActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -178,7 +182,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                                     adImage.setImageBitmap(dbHandler.getImage(retrieveImage));
                                     final long rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", 0, image, objectID, GameName, firstLetter);
                                     final  long adID = dbHandler.selectLastInsearted();
-                                    Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
+                                   // Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
                                     adTitle.setText(firstLetter);
 
                                     tapstat = true;
@@ -275,6 +279,19 @@ if(tapstat == true)
 
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        View view = getCurrentFocus();
+        if (view != null && (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_MOVE) && view instanceof EditText && !view.getClass().getName().startsWith("android.webkit.")) {
+            int scrcoords[] = new int[2];
+            view.getLocationOnScreen(scrcoords);
+            float x = ev.getRawX() + view.getLeft() - scrcoords[0];
+            float y = ev.getRawY() + view.getTop() - scrcoords[1];
+            if (x < view.getLeft() || x > view.getRight() || y < view.getTop() || y > view.getBottom())
+                ((InputMethodManager)this.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow((this.getWindow().getDecorView().getApplicationWindowToken()), 0);
+        }
+        return super.dispatchTouchEvent(ev);
+    }
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -447,6 +464,22 @@ if(tapstat == true)
         switch (v.getId()) {
             case R.id.create_ad_button: {
 
+                boolean isConnected = isNetworkAvailable();
+                if(isConnected == false ){new AlertDialog.Builder(this)
+                        .setTitle("Create Failed!")
+                        .setMessage("You Need Internet Connection For To Create A Promotion !")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(CreateAdActivity.this,MyAdsListActivity.class);
+
+                                startActivityForResult(intent, 0);
+                            }
+                        })
+
+                        .setIcon(R.drawable.alert_icon)
+                        .show();
+                return;}
+
                 // Todo: Check which parent activity invoked this activity.
                 // Todo: if it is the NFC read, then make isMyAd=0 Done
                 Toast.makeText(CreateAdActivity.this, "This may take a couple of seconds. Hang in there !",
@@ -544,8 +577,8 @@ if(tapstat == true)
 
                     //Toast.makeText(getApplicationContext(), objectID, Toast.LENGTH_LONG).show();
                     // Show a simple toast message
-                    Toast.makeText(CreateAdActivity.this, "Image Uploaded",
-                            Toast.LENGTH_SHORT).show();
+                    //  Toast.makeText(CreateAdActivity.this, "Image Uploaded",
+                    //        Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -564,7 +597,7 @@ if(tapstat == true)
                     adID = dbHandler.selectLastInsearted();
                 dbHandler.close();
 
-                Toast.makeText(getApplicationContext(), "Inserted to AD_ID="+adID, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Promotion Saved!", Toast.LENGTH_LONG).show();
 
                 if (rowID != -1) {
                     Intent intent = new Intent(this, ContactInfoActivity.class);

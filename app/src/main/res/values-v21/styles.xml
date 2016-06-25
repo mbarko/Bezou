@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="AppTheme" parent="Base.Theme.AppCompat.Light">
         <item name="android:colorPrimary">#009688</item>
@@ -17,6 +17,9 @@
         <!-- Bonus: if you want to style whole Action Bar, not just the menu -->
         <style name="MyApp.ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
             <!-- Blue background color & black bottom border -->
+            <item
+                name="android:icon"
+                > @mipmap/bizou_launcher</item>
             <item name="android:colorBackground">#FFFFFF</item>
         </style>
 

@@ -54,7 +54,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
         dbHandler.open();
         c = dbHandler.searchAdbyID(adID);
         c.moveToFirst();
-        Toast.makeText(getApplicationContext(), "Title:"+ c.getString(0), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Title: "+ c.getString(0), Toast.LENGTH_SHORT).show();
 
 
         // moving nfc tag programming page
