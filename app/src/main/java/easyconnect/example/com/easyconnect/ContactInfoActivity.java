@@ -22,6 +22,7 @@ import android.graphics.Color;
 
 import com.google.android.gms.vision.barcode.Barcode;
 import com.squareup.picasso.Picasso;
+import android.support.v4.app.NavUtils;
 
 
 public class ContactInfoActivity extends AppCompatActivity implements OnClickListener {
@@ -161,7 +162,8 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
                 // Put the parse db object ID
                 // In map activity use this parse db object id to read all the location information available for this ad
                 intent.putExtra("Object_ID", object_id);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
+                finish();
 
             }
         });
@@ -185,9 +187,14 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
 
     @Override
     public void onBackPressed() {
-        finish();
+
         Intent intent = new Intent(this, ContactListActivity.class);
-        startActivity(intent);
+        if(isMyAd == true)
+         intent = new Intent(this,MyAdsListActivity.class);
+
+
+        startActivityForResult(intent, 0);
+        finish();
     }
     
     public void onClick(View selected) {
@@ -200,7 +207,8 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
                     public void onClick(DialogInterface dialog, int id) {
                         // Link GO!
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://twitter.com/intent/user?screen_name=drevil"));
-                        startActivity(browserIntent);
+                        startActivityForResult(browserIntent, 0);
+                        finish();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -220,8 +228,9 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
                 Intent intent = new Intent(ContactInfoActivity.this, NfcTagWriterActivity.class);
                 // Format here is [contact_name]|[phone_number]|[ad_title]|[ad_description]||[ad_objectID][image_url]
                 //This way we are storing the word
-                intent.putExtra("AD_Info", c.getString(1) + "|"+ c.getString(7) );
+                intent.putExtra("AD_Info", c.getString(1) + "|" + c.getString(7));
                 startActivityForResult(intent, 0);
+                finish();
                 break;
             }
            case R.id.redeem_button: {
@@ -240,6 +249,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
                                Intent intent = new Intent(ContactInfoActivity.this,ContactListActivity.class);
 
                                startActivityForResult(intent, 0);
+                               finish();
                            }
                        })
                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -256,6 +266,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
               Intent intent = new Intent(ContactInfoActivity.this,Statistics.class);
               intent.putExtra("Object_ID", c.getString(7));
               startActivityForResult(intent, 0);
+              finish();
               break;
            }
         }
@@ -285,22 +296,30 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
                 dbHandler.close();
                 // After deleting the advertisement from the db, go back to the ListActivity
                 Intent intent = new Intent(this, ContactListActivity.class);
-                startActivity(intent);
-
+                startActivityForResult(intent, 0);
+                finish();
                 return true;
             }
             else if(id == android.R.id.home){
 
                 if(isMyAd == true){
                     Intent intent = new Intent(this, MyAdsListActivity.class);
-                startActivity(intent);}
+                    startActivityForResult(intent, 0);
+                    finish();}
                 else{
                 // After viewing the advertisement from the db, go back to the ListActivity
                 Intent intent = new Intent(this, ContactListActivity.class);
-            startActivity(intent);}
+                    startActivityForResult(intent, 0);
+                    finish();}
 
             return true;}
 
             return super.onOptionsItemSelected(item);
         }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+        //System.exit(0);
+    }
     }

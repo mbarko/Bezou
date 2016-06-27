@@ -71,6 +71,7 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
 
         FloatingActionButton createAdButton = (FloatingActionButton) findViewById(R.id.createAd_button);
         createAdButton.setOnClickListener(this);
+        createAdButton.setVisibility(View.GONE);
 
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -108,7 +109,8 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
                 try {
                     DataObject cur = (DataObject) results.get(position);
                     intent.putExtra("AD_ID", cur.getadId());
-                    startActivity(intent);
+                    startActivityForResult(intent, 0);
+                    finish();
                 }catch (Exception e){e.printStackTrace();}
 
 
@@ -175,6 +177,7 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
                 intent.putExtra("ad_objectID","0L5mkIaJy4");
                 //intent.putExtra("image_url", "");
                 startActivityForResult(intent, 0);
+                finish();
                 break;
             }
         }
@@ -236,17 +239,24 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
             case R.id.my_ads: {
                 // After deleting the advertisement from the db, go back to the ListActivity
                 Intent intent = new Intent(this, MyAdsListActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 2);
+                finish();
                 break;
             }
 
             case R.id.my_profile: {
                 Intent intent = new Intent(this, MyProfileActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
+                finish();
                 break;
             }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+        //System.exit(0);
     }
 }

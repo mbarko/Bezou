@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.gms.appindexing.Action;
@@ -100,7 +101,8 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
                 intent.putExtra("AD_ID", cur.getadId());
                 // Put the parse db Object ID
                 intent.putExtra("Object_ID", cur.getObjectID());
-                startActivity(intent);
+                startActivityForResult(intent, 0);
+                finish();
             }
         });
     }
@@ -147,7 +149,8 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
         switch (v.getId()) {
             case R.id.createAd_button: {
                 Intent intent = new Intent(this, CreateAdActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
+                finish();
                 break;
             }
         }
@@ -192,4 +195,37 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
     }
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item){
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        switch (item.getItemId()){
+            case android.R.id.home: {
+                Intent intent = new Intent(this, ContactListActivity.class);
+                startActivityForResult(intent, 0);
+                finish();
+        }}
+
+        return super.onOptionsItemSelected(item);}
+    @Override
+    public void onBackPressed() {
+
+        Intent intent = new Intent(this, ContactListActivity.class);
+
+
+
+        startActivityForResult(intent, 0);
+        finish();
+    }
+
 }

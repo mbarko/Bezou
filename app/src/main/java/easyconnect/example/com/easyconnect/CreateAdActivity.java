@@ -180,17 +180,39 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                                     // data has the bytes for the image
                                     retrieveImage = data;
                                     adImage.setImageBitmap(dbHandler.getImage(retrieveImage));
-                                    final long rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", 0, image, objectID, GameName, firstLetter);
+                                    final long rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", 0, data, objectID, GameName, firstLetter);
                                     final  long adID = dbHandler.selectLastInsearted();
+                                   dbHandler.close();
                                    // Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
                                     adTitle.setText(firstLetter);
 
                                     tapstat = true;
                                 } else {
-                                    // something went wrong
+
+
                                 }
                             }
                         });
+
+                    }
+                    else{  Cursor c;
+
+
+                        dbHandler.open();
+
+
+                        c = dbHandler.searchAdbyObj_ID(objectID);
+
+                        c.moveToFirst();
+                        byte[] image = c.getBlob(6);
+
+
+
+                        if (image != null){
+                            adImage.setImageBitmap(dbHandler.getImage(image));
+                        }
+                        dbHandler.close();
+
 
                     }
 
@@ -228,6 +250,7 @@ if(tapstat == true)
                         Intent intent = new Intent(CreateAdActivity.this,ContactListActivity.class);
 
                         startActivityForResult(intent, 0);
+                        finish();
                     }
                 })
 
@@ -379,10 +402,11 @@ if(tapstat == true)
                 if (collectedLetters.equals(Name)){
                     Intent2.putExtra("status", "Redeem!");
                    redeemstat = true;
+                    dbHandler.close();
+                    startActivityForResult(Intent2, 1);
+                    finish();}
 
-                    startActivityForResult(Intent2, 1);}
-
-
+                dbHandler.close();
                 return true;
             }}
 
@@ -396,7 +420,7 @@ if(tapstat == true)
                     } else {
                         Toast.makeText(getApplicationContext(), "Error Inserting Data. Please Try Again", Toast.LENGTH_LONG).show();
                     }*/
-
+        dbHandler.close();
         return false;
     }
     public char LetterGenerator(String alphabet){
@@ -438,6 +462,22 @@ if(tapstat == true)
     }
 
     @Override
+    public void onBackPressed() {
+
+        if(isMyAd == 0){
+            Intent intent = new Intent(this, ContactListActivity.class);
+            startActivityForResult(intent, 0);
+            finish();
+
+        }
+        else{
+            Intent intent = new Intent(this, MyAdsListActivity.class);
+            startActivityForResult(intent, 0);
+            finish();
+
+        }
+    }
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -452,8 +492,15 @@ if(tapstat == true)
 
             if(isMyAd == 0){
                 Intent intent = new Intent(this, ContactListActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 0);
+                finish();
             return true;
+            }
+else{
+                Intent intent = new Intent(this, MyAdsListActivity.class);
+                startActivityForResult(intent, 0);
+                finish();
+                return true;
             }
 
 
@@ -470,9 +517,7 @@ if(tapstat == true)
                         .setMessage("You Need Internet Connection For To Create A Promotion !")
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(CreateAdActivity.this,MyAdsListActivity.class);
-
-                                startActivityForResult(intent, 0);
+                             
                             }
                         })
 
@@ -603,7 +648,8 @@ if(tapstat == true)
                     Intent intent = new Intent(this, ContactInfoActivity.class);
                     intent.putExtra("AD_ID", adID);
                     intent.putExtra("myAd", true);
-                    startActivity(intent);
+                    startActivityForResult(intent, 0);
+                    finish();
                 }
                 else{
                     Toast.makeText(getApplicationContext(), "Error Inserting Data. Please Try Again", Toast.LENGTH_LONG).show();
@@ -672,5 +718,7 @@ if(tapstat == true)
         return image;
     }
 
-
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }

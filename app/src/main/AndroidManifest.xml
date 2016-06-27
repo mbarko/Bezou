@@ -31,7 +31,7 @@
 
         <activity
             android:name=".ContactListActivity"
-            android:icon="@drawable/add_icon"
+            android:icon="@mipmap/bizou_launcher"
 
            >
             <intent-filter>

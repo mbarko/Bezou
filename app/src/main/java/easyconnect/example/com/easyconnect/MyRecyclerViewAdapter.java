@@ -75,7 +75,10 @@ public class MyRecyclerViewAdapter extends RecyclerView
         //Log.i("img", "position url=" + mDataset.get(position).getmText1());
         //Picasso.with(holder.getImageViewContext()).load(mDataset.get(position).getImageURL()).into(holder.imageViewIcon);
         byte[] image =mDataset.get(position).getImage();
-        holder.imageViewIcon.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+        if (image == null)
+            holder.imageViewIcon.setVisibility(View.GONE);
+        else
+            holder.imageViewIcon.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
     }
 
     public void addItem(DataObject dataObj, int index) {

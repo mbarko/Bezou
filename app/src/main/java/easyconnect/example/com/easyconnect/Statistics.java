@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,5 +70,33 @@ public class Statistics extends AppCompatActivity {
         query.getFirstInBackground(callback);
 
 
+    }
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item){
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        switch (item.getItemId()){
+            case android.R.id.home: {
+                Intent intent = new Intent(this, MyAdsListActivity.class);
+                startActivityForResult(intent, 0);
+                finish();
+            }}
+
+        return super.onOptionsItemSelected(item);}
+    @Override
+    public void onBackPressed() {
+
+        Intent intent = new Intent(this, MyAdsListActivity.class);
+
+
+
+        startActivityForResult(intent, 0);
+        finish();
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

@@ -47,9 +47,11 @@ public class NfcTagWriterActivity extends org.ndeftools.util.activity.NfcTagWrit
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                         Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
                         startActivity(intent);
+                        finish();
                     } else {
                         Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
                         startActivity(intent);
+                        finish();
                     }
                 }
             });
@@ -232,6 +234,16 @@ public class NfcTagWriterActivity extends org.ndeftools.util.activity.NfcTagWrit
     protected void onTagLost() {
         toast(getString(org.ndeftools.boilerplate.R.string.tagLost));
     }
+    @Override
+    public void onBackPressed() {
 
+        Intent intent = new Intent(this, MyAdsListActivity.class);
+
+
+
+        startActivityForResult(intent, 0);
+        finish();
+    }
 }
+
 

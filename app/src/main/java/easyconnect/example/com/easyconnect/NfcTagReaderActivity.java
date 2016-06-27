@@ -75,6 +75,7 @@ public class NfcTagReaderActivity extends NfcReaderActivity {
         Log.i("ObjectID=", ""+ObjectId);
         SendDataToBackend(ObjectId);
         startActivityForResult(intent, 0);
+        finish();
     }
 
     /*
