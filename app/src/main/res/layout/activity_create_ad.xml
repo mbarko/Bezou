@@ -42,7 +42,7 @@
                     android:adjustViewBounds="true"
 
                     android:id="@+id/adImage"
-                    android:src="@drawable/meal_icon" />
+                    android:src="@mipmap/mi_taco" />
 
             </LinearLayout>
 

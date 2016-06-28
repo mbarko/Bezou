@@ -304,10 +304,17 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
                 dbHandler.deleteAd(adID);
                 dbHandler.close();
                 // After deleting the advertisement from the db, go back to the ListActivity
-                Intent intent = new Intent(this, MyAdsListActivity.class);
-                startActivity(intent);
-                finish();
-                return true;
+
+                if(isMyAd == true){
+                    Intent intent = new Intent(this, MyAdsListActivity.class);
+                    startActivity(intent);
+
+                    finish();}
+                else{
+                    // After viewing the advertisement from the db, go back to the ListActivity
+                    Intent intent = new Intent(this, ContactListActivity.class);
+                    startActivity(intent);
+                    finish();}
             }
             else if(id == android.R.id.home){
 

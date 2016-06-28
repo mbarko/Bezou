@@ -139,7 +139,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                     fullName.setText(retrieveObject.getString("Name"));
 
 
-                   // adTitle.setText(retrieveObject.getString("Title"));
+
 
                     adDetails.setText(retrieveObject.getString("Details"));
 
@@ -154,6 +154,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
 
 
                     if(!promotionExists){
+                        adTitle.setText(retrieveObject.getString("Title"));
                         final  String Name = fullName.getText().toString();
                         // String phone = phoneNumber.getText().toString();
                         final String Title = adTitle.getText().toString();

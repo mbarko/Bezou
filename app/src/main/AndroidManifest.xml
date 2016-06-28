@@ -16,7 +16,9 @@
         android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission
         android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
-
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true" />
     <application
         android:name=".MyApplication"
         android:allowBackup="true"

@@ -20,6 +20,8 @@ import java.nio.charset.Charset;
 import java.util.Locale;
 import android.support.design.widget.FloatingActionButton;
 
+import android.nfc.NdefRecord;
+
 /**
  * Created by nisalperera on 2015-12-25.
  */
@@ -96,7 +98,9 @@ public class NfcTagWriterActivity extends org.ndeftools.util.activity.NfcTagWrit
         textRecord.setText(adInfo);
         textRecord.setEncoding(Charset.forName("UTF-8"));
         textRecord.setLocale(Locale.ENGLISH);
+
         message.add(textRecord);
+
 
         return message.getNdefMessage();
     }

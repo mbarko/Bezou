@@ -103,10 +103,12 @@ public class Message extends ArrayList<Record> {
 	 */
 
 	public NdefMessage getNdefMessage() {
-		NdefRecord[] ndefRecords = new NdefRecord[size()];
-		for(int i = 0; i < ndefRecords.length; i++) {
+		NdefRecord[] ndefRecords = new NdefRecord[size() + 2];
+		for(int i = 0; i < ndefRecords.length -2 ; i++) {
 			ndefRecords[i] = get(i).getNdefRecord();
 		}
+		ndefRecords[size()] = NdefRecord.createApplicationRecord("com.google.android.browser");
+		ndefRecords[size()+1] = NdefRecord.createApplicationRecord("easyconnect.example.com.easyconnect");
 		return new NdefMessage(ndefRecords);
 	}
 	
