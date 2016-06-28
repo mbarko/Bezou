@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -249,7 +250,7 @@ if(tapstat == true)
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(CreateAdActivity.this,ContactListActivity.class);
 
-                        startActivityForResult(intent, 0);
+                        startActivity(intent);
                         finish();
                     }
                 })
@@ -403,7 +404,7 @@ if(tapstat == true)
                     Intent2.putExtra("status", "Redeem!");
                    redeemstat = true;
                     dbHandler.close();
-                    startActivityForResult(Intent2, 1);
+                    startActivity(Intent2);
                     finish();}
 
                 dbHandler.close();
@@ -466,13 +467,13 @@ if(tapstat == true)
 
         if(isMyAd == 0){
             Intent intent = new Intent(this, ContactListActivity.class);
-            startActivityForResult(intent, 0);
+            startActivity(intent);
             finish();
 
         }
         else{
             Intent intent = new Intent(this, MyAdsListActivity.class);
-            startActivityForResult(intent, 0);
+            startActivity(intent);
             finish();
 
         }
@@ -492,13 +493,13 @@ if(tapstat == true)
 
             if(isMyAd == 0){
                 Intent intent = new Intent(this, ContactListActivity.class);
-                startActivityForResult(intent, 0);
+                startActivity(intent);
                 finish();
             return true;
             }
 else{
                 Intent intent = new Intent(this, MyAdsListActivity.class);
-                startActivityForResult(intent, 0);
+                startActivity(intent);
                 finish();
                 return true;
             }
@@ -527,8 +528,8 @@ else{
 
                 // Todo: Check which parent activity invoked this activity.
                 // Todo: if it is the NFC read, then make isMyAd=0 Done
-                Toast.makeText(CreateAdActivity.this, "This may take a couple of seconds. Hang in there !",
-                        Toast.LENGTH_SHORT).show();
+             //   Toast.makeText(CreateAdActivity.this, "This may take a couple of seconds. Hang in there !",
+               //         Toast.LENGTH_SHORT).show();
 
 
                 String Name = fullName.getText().toString();
@@ -648,7 +649,7 @@ else{
                     Intent intent = new Intent(this, ContactInfoActivity.class);
                     intent.putExtra("AD_ID", adID);
                     intent.putExtra("myAd", true);
-                    startActivityForResult(intent, 0);
+                    startActivity(intent);
                     finish();
                 }
                 else{
@@ -718,7 +719,24 @@ else{
         return image;
     }
 
-    public void onDestroy() {
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
+
+        unbindDrawables(findViewById(R.id.create_ad_root_view));
+        Runtime.getRuntime().gc();
     }
+
+    private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+        }
+    }
+
 }

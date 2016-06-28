@@ -3,6 +3,7 @@ package easyconnect.example.com.easyconnect;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,13 +74,14 @@ public class MyRecyclerViewAdapter extends RecyclerView
         holder.label.setText(String.valueOf(mDataset.get(position).getmText1()));
         holder.dateTime.setText(String.valueOf(mDataset.get(position).getmText2()));
         //Log.i("img", "position url=" + mDataset.get(position).getmText1());
-        //Picasso.with(holder.getImageViewContext()).load(mDataset.get(position).getImageURL()).into(holder.imageViewIcon);
-        byte[] image =mDataset.get(position).getImage();
-        if (image == null)
+        Picasso.with(holder.getImageViewContext()).load(mDataset.get(position).getImageURL()).into(holder.imageViewIcon);
+        //byte[] image =mDataset.get(position).getImage();
+     /*   if (image == null)
             holder.imageViewIcon.setVisibility(View.GONE);
-        else
+        else {
             holder.imageViewIcon.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
-    }
+        }*/
+   }
 
     public void addItem(DataObject dataObj, int index) {
         mDataset.add(index, dataObj);
@@ -99,6 +101,17 @@ public class MyRecyclerViewAdapter extends RecyclerView
     public interface MyClickListener {
         public void onItemClick(int position, View v);
 
+    }
+
+    public void clearData() {
+        int size = this.mDataset.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                this.mDataset.remove(size-1-i);
+            }
+
+            this.notifyItemRangeRemoved(0, size);
+        }
     }
 
 }

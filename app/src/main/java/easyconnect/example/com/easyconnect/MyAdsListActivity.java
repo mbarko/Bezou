@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -101,7 +102,8 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
                 intent.putExtra("AD_ID", cur.getadId());
                 // Put the parse db Object ID
                 intent.putExtra("Object_ID", cur.getObjectID());
-                startActivityForResult(intent, 0);
+                ((MyRecyclerViewAdapter) mAdapter).clearData();
+                startActivity(intent);
                 finish();
             }
         });
@@ -149,7 +151,7 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
         switch (v.getId()) {
             case R.id.createAd_button: {
                 Intent intent = new Intent(this, CreateAdActivity.class);
-                startActivityForResult(intent, 0);
+                startActivity(intent);
                 finish();
                 break;
             }
@@ -199,10 +201,7 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
     public void onPause() {
         super.onPause();
     }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
+
     @Override
     public boolean onOptionsItemSelected (MenuItem item){
         // Handle action bar item clicks here. The action bar will
@@ -212,7 +211,7 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
         switch (item.getItemId()){
             case android.R.id.home: {
                 Intent intent = new Intent(this, ContactListActivity.class);
-                startActivityForResult(intent, 0);
+                startActivity(intent);
                 finish();
         }}
 
@@ -224,8 +223,31 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
 
 
 
-        startActivityForResult(intent, 0);
+        startActivity(intent);
         finish();
     }
+    @Override
+    protected void onDestroy() {
+        ((MyRecyclerViewAdapter) mAdapter).clearData();
+
+        super.onDestroy();
+
+        mRecyclerView.setAdapter(null);
+        unbindDrawables(findViewById(R.id.contact_list_root_view));
+        Runtime.getRuntime().gc();
+    }
+
+    private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+        }
+    }
+
 
 }

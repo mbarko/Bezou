@@ -8,7 +8,8 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:id="@+id/contact_root_view">
 
 
 
@@ -108,7 +109,10 @@
 
 
                 android:layout_row="0"
-                android:layout_column="0" />
+                android:layout_column="0"
+                android:focusableInTouchMode="false"
+                android:foreground="#26A69A"
+                android:foregroundTint="#26A69A" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -223,7 +227,8 @@
                 android:enabled="true"
                 android:layout_marginBottom="10dp"
                 android:drawableBottom="@android:color/black"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="279dp"
@@ -252,7 +257,8 @@
                 android:singleLine="true"
                 android:layout_marginBottom="5dp"
                 android:layout_marginLeft="10dp"
-                android:id="@+id/textView5" />
+                android:id="@+id/textView5"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="279dp"

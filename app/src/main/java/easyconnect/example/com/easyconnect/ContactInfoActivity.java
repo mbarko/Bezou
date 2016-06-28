@@ -24,6 +24,10 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.squareup.picasso.Picasso;
 import android.support.v4.app.NavUtils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import   java.io.ByteArrayInputStream;
+import   java.io.InputStream;
 
 public class ContactInfoActivity extends AppCompatActivity implements OnClickListener {
 
@@ -143,8 +147,13 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
         Log.i("URL 5", c.getString(3));
 
 
-        if (image != null){
-            ad_pic.setImageBitmap(dbHandler.getImage(image));
+        if (image != null && !c.getString(3).equals(null)){
+          BitmapFactory.Options options = new BitmapFactory.Options();
+           // options.inSampleSize = 8;
+            InputStream is = new ByteArrayInputStream(image);
+            Bitmap preview_bitmap = BitmapFactory.decodeStream(is, null, options);
+            //Picasso.with(this).load(c.getString(3)).into(ad_pic);
+            ad_pic.setImageBitmap(preview_bitmap);
         }
 
       /*  if (c.getString(3) != null || !c.getString(3).equals("")  )
@@ -162,7 +171,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
                 // Put the parse db object ID
                 // In map activity use this parse db object id to read all the location information available for this ad
                 intent.putExtra("Object_ID", object_id);
-                startActivityForResult(intent, 0);
+                startActivity(intent);
                 finish();
 
             }
@@ -193,7 +202,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
          intent = new Intent(this,MyAdsListActivity.class);
 
 
-        startActivityForResult(intent, 0);
+        startActivity(intent);
         finish();
     }
     
@@ -229,7 +238,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
                 // Format here is [contact_name]|[phone_number]|[ad_title]|[ad_description]||[ad_objectID][image_url]
                 //This way we are storing the word
                 intent.putExtra("AD_Info", c.getString(1) + "|" + c.getString(7));
-                startActivityForResult(intent, 0);
+                startActivity(intent);
                 finish();
                 break;
             }
@@ -248,7 +257,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
 
                                Intent intent = new Intent(ContactInfoActivity.this,ContactListActivity.class);
 
-                               startActivityForResult(intent, 0);
+                               startActivity(intent);
                                finish();
                            }
                        })
@@ -265,7 +274,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
 
               Intent intent = new Intent(ContactInfoActivity.this,Statistics.class);
               intent.putExtra("Object_ID", c.getString(7));
-              startActivityForResult(intent, 0);
+              startActivity(intent);
               finish();
               break;
            }
@@ -295,8 +304,8 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
                 dbHandler.deleteAd(adID);
                 dbHandler.close();
                 // After deleting the advertisement from the db, go back to the ListActivity
-                Intent intent = new Intent(this, ContactListActivity.class);
-                startActivityForResult(intent, 0);
+                Intent intent = new Intent(this, MyAdsListActivity.class);
+                startActivity(intent);
                 finish();
                 return true;
             }
@@ -304,12 +313,13 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
 
                 if(isMyAd == true){
                     Intent intent = new Intent(this, MyAdsListActivity.class);
-                    startActivityForResult(intent, 0);
+                    startActivity(intent);
+
                     finish();}
                 else{
                 // After viewing the advertisement from the db, go back to the ListActivity
                 Intent intent = new Intent(this, ContactListActivity.class);
-                    startActivityForResult(intent, 0);
+                    startActivity(intent);
                     finish();}
 
             return true;}

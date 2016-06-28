@@ -18,6 +18,7 @@ import org.ndeftools.wellknown.TextRecord;
 
 import java.nio.charset.Charset;
 import java.util.Locale;
+import android.support.design.widget.FloatingActionButton;
 
 /**
  * Created by nisalperera on 2015-12-25.

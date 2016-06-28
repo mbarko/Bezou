@@ -20,6 +20,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
 import android.support.v7.app.ActionBar;
+import android.view.ViewGroup;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 
 public class ContactListActivity extends AppCompatActivity implements View.OnClickListener {
@@ -98,21 +103,21 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
                 Log.i(LOG_TAG, " Clicked on Item " + position);
 
 
+                Intent intent = new Intent(ContactListActivity.this, ContactInfoActivity.class);
 
-                    Intent intent = new Intent(ContactListActivity.this, ContactInfoActivity.class);
+                // Get the data of the item that user touches
+                //String contactName = ((TextView) v).getText().toString();
 
-                    // Get the data of the item that user touches
-                    //String contactName = ((TextView) v).getText().toString();
-
-                    // put the dummy contact info as an extra field
+                // put the dummy contact info as an extra field
 
                 try {
                     DataObject cur = (DataObject) results.get(position);
                     intent.putExtra("AD_ID", cur.getadId());
-                    startActivityForResult(intent, 0);
+                    startActivity(intent);
                     finish();
-                }catch (Exception e){e.printStackTrace();}
-
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
 
             }
@@ -149,6 +154,7 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
 
                     DataObject obj = new DataObject(c.getString(1), c.getString(3), c.getLong(0),imgurl, c.getString(8),c.getBlob(7));
                     results.add(index, obj);
+
                     index++;
                 }
 
@@ -176,7 +182,7 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
         intent.putExtra("ad_description", separated[3]);*/
                 intent.putExtra("ad_objectID","0L5mkIaJy4");
                 //intent.putExtra("image_url", "");
-                startActivityForResult(intent, 0);
+                startActivity(intent);
                 finish();
                 break;
             }
@@ -238,15 +244,29 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
         switch (item.getItemId()){
             case R.id.my_ads: {
                 // After deleting the advertisement from the db, go back to the ListActivity
-                Intent intent = new Intent(this, MyAdsListActivity.class);
-                startActivityForResult(intent, 2);
-                finish();
-                break;
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                String tst = prefs.getString("firstName",null);
+                if(prefs.getString("firstName","").equals("tacoheaven")){
+
+                    Intent intent = new Intent(this,MyAdsListActivity.class);
+                    startActivity(intent);
+                    finish();
+                    break;
+                }
+                else
+                {
+                    Intent intent = new Intent(this,MyProfileActivity.class);
+                    startActivity(intent);
+                    finish();
+                    break;
+                }
+
             }
 
             case R.id.my_profile: {
                 Intent intent = new Intent(this, MyProfileActivity.class);
-                startActivityForResult(intent, 0);
+                startActivity(intent);
+
                 finish();
                 break;
             }
@@ -254,9 +274,27 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
 
         return super.onOptionsItemSelected(item);
     }
-    public void onDestroy() {
+    @Override
+    protected void onDestroy() {
+        ((MyRecyclerViewAdapter) mAdapter).clearData();
+
         super.onDestroy();
+
+        mRecyclerView.setAdapter(null);
+
+       // unbindDrawables(findViewById(R.id.contact_list_root_view));
         Runtime.getRuntime().gc();
-        //System.exit(0);
     }
-}
+
+ /*   private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+        }}*/
+    }
+

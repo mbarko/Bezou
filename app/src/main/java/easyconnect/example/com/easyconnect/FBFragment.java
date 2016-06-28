@@ -26,7 +26,8 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -123,7 +124,7 @@ public class FBFragment extends Fragment {
         lastnameTextview = (TextView)v.findViewById(R.id.my_last_name);
         phoneNumberTextview = (TextView)v.findViewById(R.id.my_phone);
 
-        sharedPrefs = this.getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         firstnameTextview.setText(sharedPrefs.getString("firstName", ""));
         lastnameTextview.setText(sharedPrefs.getString("lastName", ""));
         phoneNumberTextview.setText(sharedPrefs.getString("phoneNumber", ""));
@@ -166,18 +167,25 @@ public class FBFragment extends Fragment {
             public void onClick(View view) {
 
                 // if name fileds are empty dont do anything
-                if (firstnameTextview.getText() == null || firstnameTextview.getText().toString().isEmpty() ||
-                        lastnameTextview.getText() == null || lastnameTextview.getText().toString().isEmpty() ||
-                        phoneNumberTextview.getText() == null || phoneNumberTextview.getText().toString().isEmpty()
-                        ) {
-                    Toast.makeText(getActivity(), "Please Enter First Name, Last Name and Phone Number",
+                if (firstnameTextview.getText() == null || firstnameTextview.getText().toString().isEmpty()
+//                        ||
+//                        lastnameTextview.getText() == null || lastnameTextview.getText().toString().isEmpty() ||
+//                        phoneNumberTextview.getText() == null || phoneNumberTextview.getText().toString().isEmpty()
+//
+                     )
+                {
+                    Toast.makeText(getActivity(), "Please Enter Restaurant Code",
                             Toast.LENGTH_SHORT).show();
                 }
                 // else save first name and last name in android shared preferences
                 else {
-                    Toast.makeText(getActivity(), "Saved",
-                            Toast.LENGTH_SHORT).show();
+                    if(firstnameTextview.getText().toString().equals("tacoheaven")){
                     saveToSharedPreferences();
+                        Intent intent = new Intent(getActivity(),MyAdsListActivity.class);
+                        startActivity(intent);
+                        }
+                    else Toast.makeText(getActivity(), "Wrong code try again!",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -186,13 +194,14 @@ public class FBFragment extends Fragment {
     public void saveToSharedPreferences(){
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString("firstName", firstnameTextview.getText().toString());
-        editor.putString("lastName", lastnameTextview.getText().toString());
-        editor.putString("phoneNumber", phoneNumberTextview.getText().toString());
-        editor.apply();
+       /* editor.putString("lastName", lastnameTextview.getText().toString());
+        editor.putString("phoneNumber", phoneNumberTextview.getText().toString());*/
 
-        Log.i("SharedPref firstName", "" + firstnameTextview.getText().toString());
+        editor.commit();
+
+        Log.i("SharedPref firstName", "" + firstnameTextview.getText().toString());/*
         Log.i("SharedPref lastName", ""+lastnameTextview.getText().toString());
-        Log.i("SharedPref phoneNumber", ""+phoneNumberTextview.getText().toString());
+        Log.i("SharedPref phoneNumber", ""+phoneNumberTextview.getText().toString());*/
     }
 }
 
