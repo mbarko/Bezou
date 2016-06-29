@@ -529,8 +529,8 @@ else{
 
                 // Todo: Check which parent activity invoked this activity.
                 // Todo: if it is the NFC read, then make isMyAd=0 Done
-             //   Toast.makeText(CreateAdActivity.this, "This may take a couple of seconds. Hang in there !",
-               //         Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateAdActivity.this, "This may take a couple of seconds. Hang in there !",
+                       Toast.LENGTH_SHORT).show();
 
 
                 String Name = fullName.getText().toString();

@@ -7,7 +7,7 @@ android {
     defaultConfig {
 
         minSdkVersion 10
-        targetSdkVersion 10
+        targetSdkVersion 16
     }
 
     buildTypes {
