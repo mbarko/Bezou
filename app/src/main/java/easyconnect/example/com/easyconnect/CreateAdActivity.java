@@ -154,6 +154,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
 
 
                     if(!promotionExists){
+                        tapstat = true;
                         adTitle.setText(retrieveObject.getString("Title"));
                         final  String Name = fullName.getText().toString();
                         // String phone = phoneNumber.getText().toString();
@@ -188,7 +189,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                                    // Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
                                     adTitle.setText(firstLetter);
 
-                                    tapstat = true;
+                                   
                                 } else {
 
 

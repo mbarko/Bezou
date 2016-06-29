@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="easyconnect.example.com.easyconnect">
+    package="easyconnect.example.com.easyconnect"
+   >
 
     <uses-permission android:name="android.permission." />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -20,7 +21,7 @@
         android:name="android.hardware.nfc"
         android:required="true" />
     <application
-        android:name=".MyApplication"
+        android:name="MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/bizou_launcher"
 
@@ -110,6 +111,7 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

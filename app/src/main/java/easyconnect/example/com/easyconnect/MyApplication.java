@@ -12,6 +12,8 @@ import com.parse.ParseUser;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import android.content.Context;
+import android.support.multidex.MultiDex;
 
 /**
  * Created by bkashyap on 6/17/2015.
@@ -51,5 +53,12 @@ public class MyApplication extends Application{
         } catch (NoSuchAlgorithmException e) {
 
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context base)
+    {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 }
