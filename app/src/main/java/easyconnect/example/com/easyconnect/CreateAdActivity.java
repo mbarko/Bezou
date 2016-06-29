@@ -513,6 +513,9 @@ else{
         switch (v.getId()) {
             case R.id.create_ad_button: {
 
+                Toast.makeText(CreateAdActivity.this, "This may take a couple of seconds. Hang in there !",
+                        Toast.LENGTH_SHORT).show();
+
                 boolean isConnected = isNetworkAvailable();
                 if(isConnected == false ){new AlertDialog.Builder(this)
                         .setTitle("Create Failed!")
@@ -529,8 +532,7 @@ else{
 
                 // Todo: Check which parent activity invoked this activity.
                 // Todo: if it is the NFC read, then make isMyAd=0 Done
-                Toast.makeText(CreateAdActivity.this, "This may take a couple of seconds. Hang in there !",
-                       Toast.LENGTH_SHORT).show();
+
 
 
                 String Name = fullName.getText().toString();
