@@ -540,6 +540,21 @@ else{
                 String ImageUrl = adImageUrl.getText().toString();
                 String GameName = "Lucky Letters!";
 
+                if(Name.equals("")||Name.equals(null)){
+                    new AlertDialog.Builder(this)
+                            .setTitle("Create Failed!")
+                            .setMessage("You Need To Write a word for the promotion !")
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            })
+
+                            .setIcon(R.drawable.alert_icon)
+                            .show();
+                    return;
+                }
+
                 // Do the following if you are creating an ad
                 if(isMyAd == 1) {
                     // Create the ParseFile
