@@ -82,11 +82,14 @@ public abstract class NfcTagWriterActivity extends NfcDetectorActivity {
 			Log.d(TAG, "Cannot write unformatted tag");
 		} else {
             Ndef ndef = Ndef.get(tag);
+
             if(ndef != null) {
             	try {
+
             		Log.d(TAG, "Write formatted tag");
 
             		ndef.connect();
+
             		if (!ndef.isWritable()) {
             			Log.d(TAG, "Tag is not writeable");
 
@@ -103,7 +106,7 @@ public abstract class NfcTagWriterActivity extends NfcDetectorActivity {
             		    return false;
             		}
             		ndef.writeNdefMessage(rawMessage);
-            		
+					ndef.makeReadOnly();
             		writeNdefSuccess();
             		
             		return true;

@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -104,6 +105,38 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
         //check the caller activity
       if(caller != null && caller.getClassName().compareTo("easyconnect.example.com.easyconnect.NfcTagReaderActivity") == 0)
     {
+
+        long currenttime = System.currentTimeMillis();
+
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        long lasttaptime = sharedPrefs.getLong("lasttaptime", 0);
+
+        if ((currenttime - lasttaptime) < 3600000) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Tap Failed")
+                    .setMessage("You need to wait an hour before you can try again!")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(CreateAdActivity.this, ContactListActivity.class);
+
+                            startActivity(intent);
+                            finish();
+                            return;
+                        }
+                    })
+
+                    .setIcon(R.drawable.alert_icon)
+                    .show();
+       return; }
+    else {
+          SharedPreferences.Editor editor = sharedPrefs.edit();
+          editor.putLong("lasttaptime", System.currentTimeMillis());
+
+
+          editor.commit();
+      }
+
+
             //Set global identifier to 0 i.e its not my ad
             isMyAd = 0;
             //[contact_name]|[phone_number]|[ad_title]|[ad_description]|[image_url]
@@ -189,7 +222,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                                    // Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
                                     adTitle.setText(firstLetter);
 
-                                   
+
                                 } else {
 
 
