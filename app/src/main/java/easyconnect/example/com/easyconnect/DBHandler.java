@@ -22,7 +22,7 @@ public class DBHandler {
 
     public static final String TABLE_NAME = "contactInfoTable";
     public static final String DATA_BASE_NAME = "devDataBase";
-    public static final int DATA_BASE_VERSION = 4;
+    public static final int DATA_BASE_VERSION = 5;
 
 
     // AdsInfoTable
@@ -38,7 +38,8 @@ public class DBHandler {
     private static final String OBJ_ID = "object_id";
     public static final String GAME_NAME = "game_name";
     public static final String COLLECTED_LETTERS = "collected_letters";
-    public static final String ADS_TABLE_CREATE = "CREATE TABLE adsTable (_id INTEGER PRIMARY KEY AUTOINCREMENT,userName TEXT, title TEXT, description TEXT, imageURL TEXT, phone TEXT, isMyAd INTEGER DEFAULT 0,image_data BLOB, object_id TEXT,game_name TEXT,collected_letters TEXT);";
+    public static final String RESTAURANT_CODE = "restaurant_code";
+    public static final String ADS_TABLE_CREATE = "CREATE TABLE adsTable (_id INTEGER PRIMARY KEY AUTOINCREMENT,userName TEXT, title TEXT, description TEXT, imageURL TEXT, phone TEXT, isMyAd INTEGER DEFAULT 0,image_data BLOB, object_id TEXT,game_name TEXT,collected_letters TEXT,restaurant_code TEXT);";
     public static final String ADS_TABLE_DROP_IF_EXIST = "DROP TABLE IF EXISTS adsTable";
 
     DataBaseHelper dbhelper;
@@ -119,7 +120,7 @@ public class DBHandler {
     }
 
     // Methods for adsTable
-    public long insertAd (String adTitle, String userName, String adDescription, String imageURL, String phone, int isMyAd, byte[] image, String objectID, String gameName,String collectedLetters){
+    public long insertAd (String adTitle, String userName, String adDescription, String imageURL, String phone, int isMyAd, byte[] image, String objectID, String gameName,String collectedLetters,String restaurantCode){
         ContentValues content = new ContentValues();
         content.put(TITLE, adTitle);
         content.put(USER_NAME, userName);
@@ -131,6 +132,8 @@ public class DBHandler {
         content.put(OBJ_ID,   objectID);
         content.put(GAME_NAME, gameName);
         content.put(COLLECTED_LETTERS, collectedLetters);
+        content.put(RESTAURANT_CODE, restaurantCode);
+
 
         return db.insertOrThrow(ADS_TABLE, null, content);
     }
@@ -149,11 +152,11 @@ public class DBHandler {
         return cursor.getLong(0);
     }
     public Cursor searchAdbyID (long adId){
-        return db.query(ADS_TABLE, new String[]{TITLE, USER_NAME, DESCRIPTION, IMAGE_URL, PHONE, IS_MY_AD, KEY_IMG, OBJ_ID, GAME_NAME, COLLECTED_LETTERS}, "_id=" + adId, null, null, null, null, null);
+        return db.query(ADS_TABLE, new String[]{TITLE, USER_NAME, DESCRIPTION, IMAGE_URL, PHONE, IS_MY_AD, KEY_IMG, OBJ_ID, GAME_NAME, COLLECTED_LETTERS,RESTAURANT_CODE}, "_id=" + adId, null, null, null, null, null);
     }
 
    public Cursor searchAdbyObj_ID (String objId){
-        return db.query(ADS_TABLE, new String[]{TITLE, USER_NAME, DESCRIPTION, IMAGE_URL, PHONE, IS_MY_AD, KEY_IMG, OBJ_ID, GAME_NAME,COLLECTED_LETTERS}, OBJ_ID + "=?",
+        return db.query(ADS_TABLE, new String[]{TITLE, USER_NAME, DESCRIPTION, IMAGE_URL, PHONE, IS_MY_AD, KEY_IMG, OBJ_ID, GAME_NAME,COLLECTED_LETTERS,RESTAURANT_CODE}, OBJ_ID + "=?",
                     new String[] { String.valueOf(objId) }, null, null, null, null);
     }
 

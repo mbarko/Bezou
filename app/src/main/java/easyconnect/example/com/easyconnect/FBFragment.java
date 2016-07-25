@@ -179,7 +179,7 @@ public class FBFragment extends Fragment {
                 }
                 // else save first name and last name in android shared preferences
                 else {
-                    if(firstnameTextview.getText().toString().equals("tacoheaven")){
+                    if(firstnameTextview.getText().toString().equals("tacoheaven")||firstnameTextview.getText().toString().equals("duma&mizo")){
                     saveToSharedPreferences();
                         Intent intent = new Intent(getActivity(),MyAdsListActivity.class);
                         startActivity(intent);

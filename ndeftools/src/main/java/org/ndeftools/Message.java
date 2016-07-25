@@ -103,12 +103,12 @@ public class Message extends ArrayList<Record> {
 	 */
 
 	public NdefMessage getNdefMessage() {
-		NdefRecord[] ndefRecords = new NdefRecord[size() + 2];
-		for(int i = 0; i < ndefRecords.length -2 ; i++) {
+		NdefRecord[] ndefRecords = new NdefRecord[size() + 1];
+		for(int i = 0; i < ndefRecords.length -1 ; i++) {
 			ndefRecords[i] = get(i).getNdefRecord();
 		}
-		ndefRecords[size()] = NdefRecord.createApplicationRecord("com.google.android.browser");
-		ndefRecords[size()+1] = NdefRecord.createApplicationRecord("easyconnect.example.com.easyconnect");
+		ndefRecords[size()] = NdefRecord.createApplicationRecord("easyconnect.example.com.easyconnect");
+		//ndefRecords[size()] = NdefRecord.createApplicationRecord("easyconnect.example.com.easyconnect");
 		return new NdefMessage(ndefRecords);
 	}
 	
@@ -118,14 +118,14 @@ public class Message extends ArrayList<Record> {
 	 * @param intent intent containing NDEF data
 	 * @throws FormatException if known record type cannot be parsed
 	 */
-	
+
 	public Message(Intent intent) throws FormatException {
 		this(intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES));
 	}
-	
+
 	/**
 	 * {@link Parcelable} array constructor. If multiple messages, records are added in natural order.
-	 * 
+	 *
 	 * @param messages {@link NdefMessage}s in {@link Parcelable} array.
 	 * @throws FormatException if known record type cannot be parsed
 	 */

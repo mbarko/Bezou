@@ -246,7 +246,7 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
                 // After deleting the advertisement from the db, go back to the ListActivity
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 String tst = prefs.getString("firstName",null);
-                if(prefs.getString("firstName","").equals("tacoheaven")){
+                if(prefs.getString("firstName","").equals("tacoheaven")||prefs.getString("firstName","").equals("duma&mizo")){
 
                     Intent intent = new Intent(this,MyAdsListActivity.class);
                     startActivity(intent);

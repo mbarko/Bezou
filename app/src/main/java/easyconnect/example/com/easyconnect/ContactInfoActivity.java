@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -162,7 +163,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
         dbHandler.close();
 
 
-        FloatingActionButton mapInfoButton = (FloatingActionButton)findViewById(R.id.mapInfo);
+      /*  FloatingActionButton mapInfoButton = (FloatingActionButton)findViewById(R.id.mapInfo);
 
         mapInfoButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -175,7 +176,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
                 finish();
 
             }
-        });
+        });*/
 
         // Demonically SHOW button and read parse db Object ID
         // Show only for my ads

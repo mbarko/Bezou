@@ -1,9 +1,11 @@
 package easyconnect.example.com.easyconnect;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,8 +18,15 @@ import android.view.ViewGroup;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.FindCallback;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Iterator;
 
 /**
  * Created by rahal on 2016-01-04.
@@ -29,7 +38,7 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
     private RecyclerView.LayoutManager mLayoutManager;
     private static String LOG_TAG = "CardViewActivity";
     private ArrayList results = new ArrayList<DataObject>();
-
+    private ParseObject retrieveObject;
     DBHandler dbHandler;
     Cursor c;
     /**
@@ -102,7 +111,7 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
                 intent.putExtra("AD_ID", cur.getadId());
                 // Put the parse db Object ID
                 intent.putExtra("Object_ID", cur.getObjectID());
-                ((MyRecyclerViewAdapter) mAdapter).clearData();
+                //((MyRecyclerViewAdapter) mAdapter).clearData();
                 startActivity(intent);
                 finish();
             }
@@ -111,10 +120,43 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
 
     // getting all contact info from DB
     private ArrayList<DataObject> getDataSet() {
-
-        // retrieve data from database
         dbHandler.open();
         Cursor c = dbHandler.searchAllAds();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String tst = prefs.getString("firstName",null);
+        if(prefs.getString("firstName","").equals("duma&mizo")) {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Ad_info_test2");
+            query.whereEqualTo("RestaurantCode", "tacoheaven");
+            query.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> adList, ParseException e) {
+                    if (e == null) {
+                        int index = 0;
+                        for(Iterator<ParseObject> i = adList.iterator(); i.hasNext(); ) {
+                            ParseObject item = i.next();
+                            String fk = item.getObjectId();
+                            dbHandler.open();
+                           Cursor c2 = dbHandler.searchAdbyObj_ID(item.getObjectId());
+
+                            //System.out.println(item);
+
+
+                            if(!c2.moveToFirst())
+                            dbHandler.insertAd(item.getString("Title"),item.getString("Name"), item.getString("Details"), item.getString("ImageUrl"), "N/A", 1, null, item.getObjectId(), item.getString("GameName"), "N",item.getString("RestaurantCode"));
+                            dbHandler.close();
+                            index++;
+                        }
+
+                    } else {
+                        Log.d("score", "Error: " + e.getMessage());
+                    }
+                }
+            });
+
+        }
+        // retrieve data from database
+
+
         int index = 0;
         if (c.moveToFirst()) { // if cursor move to first that means there are some data
             do {
@@ -129,8 +171,9 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
                 Log.i("printDBInfo", "ObjId: " + c.getString(8));
                 int isMyAd = Integer.parseInt(c.getString(6));
 
+
                 // Only add my ads
-                if (isMyAd == 1) {
+                 if (isMyAd == 1) {
                     byte[] image = c.getBlob(7);
                     // Title, Description, Ad id (in local databse), Image URL, Object ID (in Parse)
                     DataObject obj = new DataObject(c.getString(1), c.getString(3), c.getLong(0), c.getString(4), c.getString(8),c.getBlob(7));
@@ -138,12 +181,16 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
                     index++;
                 }
 
+
             } while (c.moveToNext());
-        }
-        dbHandler.close();
+
+        dbHandler.close();}
 
         return results;
     }
+    /**
+     * helper to set retrieve objects : retrieveResult and retrieveImageMap
+     */
 
     // handing the circle buttons the side
     @Override

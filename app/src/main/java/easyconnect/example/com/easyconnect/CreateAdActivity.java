@@ -113,7 +113,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
 
         if ((currenttime - lasttaptime) < 3600000) {
             new AlertDialog.Builder(this)
-                    .setTitle("Tap Failed")
+                    .setTitle("You Tapped a second ago !?")
                     .setMessage("You need to wait an hour before you can try again!")
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -128,12 +128,14 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                     .setIcon(R.drawable.alert_icon)
                     .show();
        return; }
-    else {
+    else  {
+            if(isNetworkAvailable()){
           SharedPreferences.Editor editor = sharedPrefs.edit();
-          editor.putLong("lasttaptime", System.currentTimeMillis());
+
+            editor.putLong("lasttaptime", System.currentTimeMillis());
 
 
-          editor.commit();
+          editor.commit();}
       }
 
 
@@ -216,7 +218,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                                     // data has the bytes for the image
                                     retrieveImage = data;
                                     adImage.setImageBitmap(dbHandler.getImage(retrieveImage));
-                                    final long rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", 0, data, objectID, GameName, firstLetter);
+                                    final long rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", 0, data, objectID, GameName, firstLetter,"tacoheaven");
                                     final  long adID = dbHandler.selectLastInsearted();
                                    dbHandler.close();
                                    // Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
@@ -553,7 +555,7 @@ else{
                 boolean isConnected = isNetworkAvailable();
                 if(isConnected == false ){new AlertDialog.Builder(this)
                         .setTitle("Create Failed!")
-                        .setMessage("You Need Internet Connection For To Create A Promotion !")
+                        .setMessage("You Need Internet Connection To Create A Promotion !")
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                              
@@ -576,10 +578,10 @@ else{
                 String ImageUrl = adImageUrl.getText().toString();
                 String GameName = "Lucky Letters!";
 
-                if(Name.equals("")||Name.equals(null)){
+                if(Name.equals("")||Name.equals(null) ||Title.equals("")||Title.equals(null)|| Details.equals("")||Details.equals(null)){
                     new AlertDialog.Builder(this)
                             .setTitle("Create Failed!")
-                            .setMessage("You Need To Write a word for the promotion !")
+                            .setMessage("You Need To fill out all the information for the promotion !")
                             .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
 
@@ -650,6 +652,7 @@ else{
                     imgupload.put("ImageUrl",ImageUrl);
                     imgupload.put("TapStat",0);
                     imgupload.put("RedeemStat",0);
+                    imgupload.put("RestaurantCode","tacoheaven");
 
 
                     // Create the class and the columns
@@ -691,7 +694,7 @@ else{
 
 
                     Log.i("Loc", "create ad: objectID=" + objectID);
-                    rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", isMyAd,image,objectID,GameName,"");
+                    rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", isMyAd,image,objectID,GameName,"","tacoheaven");
                     adID = dbHandler.selectLastInsearted();
                 dbHandler.close();
 
