@@ -1,5 +1,6 @@
 package easyconnect.example.com.easyconnect;
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -19,7 +20,7 @@ import android.support.multidex.MultiDex;
  * Created by bkashyap on 6/17/2015.
  */
 public class MyApplication extends Application{
-
+    SharedPreferences sharedPrefs;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -35,6 +36,7 @@ public class MyApplication extends Application{
         defaultACL.setPublicReadAccess(true);
 
         ParseACL.setDefaultACL(defaultACL, true);
+
     }
 
     public void printHashKey(){
@@ -61,4 +63,5 @@ public class MyApplication extends Application{
         super.attachBaseContext(base);
         MultiDex.install(this);
     }
+
 }

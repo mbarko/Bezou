@@ -12,12 +12,38 @@
     android:id="@+id/contact_list_root_view">
 
 
+    <ImageView
+        android:layout_width="600dp"
+        android:layout_height="900dp"
+
+        android:adjustViewBounds="false"
+        android:id="@+id/sticker"
+
+        android:layout_row="0"
+        android:layout_column="0"
+        android:focusableInTouchMode="false"
+        android:foreground="#26A69A"
+        android:foregroundTint="#26A69A"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="false"
+        android:cropToPadding="false"
+        android:layout_centerInParent="true"
+        android:paddingStart="-10dp"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/stk"
+        android:layout_below="@+id/ptr_txt2" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/my_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:overScrollMode="never"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        android:touchscreenBlocksFocus="true"
+        android:visibility="visible" />
+
+
+
 
     <LinearLayout
 
@@ -25,7 +51,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentEnd="true"
+        android:id="@+id/linearLayout">
 
         <!--
         <android.support.design.widget.FloatingActionButton
@@ -52,7 +79,22 @@
             android:layout_centerHorizontal="true"
             android:layout_gravity="bottom|right"
             android:layout_marginBottom="8dip"
-            android:src="@drawable/add_icon" />
+            android:src="@drawable/add_icon"
+            android:layout_marginRight="10dp" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/NFC_link"
+            android:layout_width="64dip"
+            android:layout_height="64dip"
+            android:elevation="10dp"
+            circle:backgroundTint="#ffad33"
+            android:propertyName="translationZ"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="8dip"
+            android:src="@drawable/nfc_link"
+            android:layout_marginRight="10dp"
+            android:visibility="gone" />
 
         <!-- comment for now
       <at.markushi.ui.CircleButton
@@ -66,4 +108,65 @@
           android:src="@drawable/contacts_icon" /> -->
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="ptr_txt"
+        android:id="@+id/ptr_txt"
+        android:layout_alignTop="@+id/my_recycler_view"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:visibility="invisible"
+        android:layout_marginTop="-10dp"
+        android:layout_marginRight="15dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="ptr_txt4"
+        android:id="@+id/ptr_txt4"
+        android:layout_alignTop="@+id/my_recycler_view"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="false"
+        android:visibility="invisible"
+        android:layout_marginTop="-10dp"
+        android:layout_marginRight="60dp"
+        android:singleLine="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="ptr_txt"
+        android:id="@+id/ptr_txt2"
+        android:layout_alignParentEnd="false"
+        android:visibility="invisible"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="-80dp"
+        android:paddingTop="60dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="ptr_txt"
+        android:id="@+id/ptr_txt3"
+        android:layout_alignParentEnd="false"
+        android:visibility="invisible"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="-15dp"
+        android:layout_alignParentBottom="true" />
+
+    <com.nhaarman.supertooltips.ToolTipRelativeLayout
+        android:id="@+id/activity_main_tooltipRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/linearLayout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
 </RelativeLayout>

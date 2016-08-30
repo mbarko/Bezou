@@ -106,7 +106,7 @@ public abstract class NfcTagWriterActivity extends NfcDetectorActivity {
             		    return false;
             		}
             		ndef.writeNdefMessage(rawMessage);
-					ndef.makeReadOnly();
+					//ndef.makeReadOnly();
             		writeNdefSuccess();
             		
             		return true;

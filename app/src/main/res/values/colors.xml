@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="redeem_color">#F06292</color>
+    <color name="tip_orange">#ffad33</color>
+    <color name="tip_white">#fffbf4</color>
+    <color name="tip_green">#26A69A</color>
+    <color name="tip_green2">#82ac13</color>
 </resources>

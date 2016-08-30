@@ -23,10 +23,10 @@
     <application
         android:name="MyApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/bizou_launcher"
+        android:icon="@mipmap/bizou_launcher2"
 
         android:theme="@style/AppTheme"
-        android:logo="@mipmap/bizou_launcher">
+        android:logo="@mipmap/bizou_launcher2">
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -34,7 +34,7 @@
 
         <activity
             android:name=".ContactListActivity"
-            android:icon="@mipmap/bizou_launcher"
+            android:icon="@mipmap/bizou_launcher2"
 
            >
             <intent-filter>
@@ -103,6 +103,11 @@
             android:name=".Statistics"
             android:label="Promo Stats"
             android:parentActivityName=".MyAdsListActivity">
+        </activity>
+        <activity
+            android:name=".Register"
+            android:label="Register !"
+            android:parentActivityName=".ContactListActivity">
         </activity>
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for

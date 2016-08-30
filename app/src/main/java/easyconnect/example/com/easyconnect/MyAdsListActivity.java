@@ -3,30 +3,47 @@ package easyconnect.example.com.easyconnect;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.nhaarman.supertooltips.ToolTip;
+import com.nhaarman.supertooltips.ToolTipRelativeLayout;
+import com.nhaarman.supertooltips.ToolTipView;
 import com.parse.GetCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.FindCallback;
+import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by rahal on 2016-01-04.
@@ -41,6 +58,15 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
     private ParseObject retrieveObject;
     DBHandler dbHandler;
     Cursor c;
+    Boolean refresh;
+    SharedPreferences sharedPrefs;
+    ArrayList<ParseObject> restaurantRecords;
+    int index = 0;
+    ImageView page_pic;
+    private ToolTipView myToolTipView;
+
+    boolean missing = false;
+    static private final ReentrantLock  l = new ReentrantLock();
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -55,6 +81,7 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
         getSupportActionBar().setLogo(R.drawable.cash);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         // initializing database
+
         dbHandler = new DBHandler(getBaseContext());
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
@@ -65,6 +92,10 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
         mRecyclerView.setAdapter(mAdapter);
 
 
+        page_pic = (ImageView) findViewById(R.id.sticker);
+        page_pic.setImageResource(R.drawable.chef_hat2);
+        page_pic.setBackground(null);
+        restaurantRecords = new  ArrayList<ParseObject>();
         // Code to Add an item with default animation
         //((MyRecyclerViewAdapter) mAdapter).addItem(obj, index);
 
@@ -75,6 +106,25 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
         // TODO:this  button is removed from this page
         //FloatingActionButton settingsButton = (FloatingActionButton) findViewById(R.id.contacts_button);
         //settingsButton.setOnClickListener(this);
+
+        ToolTipRelativeLayout toolTipRelativeLayout = (ToolTipRelativeLayout) findViewById(R.id.activity_main_tooltipRelativeLayout);
+        ToolTip toolTip = null;
+        try {
+            if(!sharedPrefs.getBoolean("myToolTipView_myad",false)) {
+
+                toolTip = new ToolTip().
+                        withContentView(LayoutInflater.from(this).inflate(R.layout.custom_tooltip_add, null)).withColor(ContextCompat.getColor(this, R.color.tip_green))
+                        .withShadow().withAnimationType(ToolTip.AnimationType.FROM_TOP);
+                myToolTipView = toolTipRelativeLayout.showToolTipForView(toolTip, findViewById(R.id.createAd_button));
+                myToolTipView.setOnClickListener(this);
+                saveToSharedPreferences("myToolTipView_myad", true);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
 
         FloatingActionButton createAdButton = (FloatingActionButton) findViewById(R.id.createAd_button);
         createAdButton.setOnClickListener(this);
@@ -120,43 +170,67 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
 
     // getting all contact info from DB
     private ArrayList<DataObject> getDataSet() {
-        dbHandler.open();
-        Cursor c = dbHandler.searchAllAds();
+
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String tst = prefs.getString("firstName",null);
-        if(prefs.getString("firstName","").equals("duma&mizo")) {
+        String tst = prefs.getString("firstName","");
+
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Ad_info_test2");
-            query.whereEqualTo("RestaurantCode", "tacoheaven");
+        if(!prefs.getString("firstName","").equals("duma&mizo"))
+            query.whereEqualTo("RestaurantCode", tst);
             query.findInBackground(new FindCallback<ParseObject>() {
                 public void done(List<ParseObject> adList, ParseException e) {
                     if (e == null) {
-                        int index = 0;
-                        for(Iterator<ParseObject> i = adList.iterator(); i.hasNext(); ) {
+
+                        // get the image bitmap from retrieveResult
+
+                        for (Iterator<ParseObject> i = adList.iterator(); i.hasNext(); ) {
                             ParseObject item = i.next();
                             String fk = item.getObjectId();
                             dbHandler.open();
-                           Cursor c2 = dbHandler.searchAdbyObj_ID(item.getObjectId());
-
+                            ;
+                            Cursor c2 = dbHandler.searchAdbyObj_ID(item.getObjectId());
+//item.deleteInBackground();
                             //System.out.println(item);
 
 
-                            if(!c2.moveToFirst())
-                            dbHandler.insertAd(item.getString("Title"),item.getString("Name"), item.getString("Details"), item.getString("ImageUrl"), "N/A", 1, null, item.getObjectId(), item.getString("GameName"), "N",item.getString("RestaurantCode"));
-                            dbHandler.close();
-                            index++;
-                        }
+                            if (!c2.moveToFirst()) {
+                                //ParseFile imageFile = (ParseFile) item.get("ImageFile");
+                                restaurantRecords.add(index, item);
 
+
+                                if (index < 35) {
+                                    final long adID = dbHandler.insertAd(item.getString("Title"), item.getString("Name"), item.getString("Details"), item.getString("ImageUrl"), "N/A", 1, null, item.getObjectId(), item.getString("GameName"), "N", item.getString("RestaurantCode"));
+                                    // getimg( imageFile);
+                                    missing = true;
+
+                                } else {
+                                    final long adID = dbHandler.insertAd(item.getString("Title"), item.getString("Name"), item.getString("Details"), item.getString("ImageUrl"), "N/A", 1, null, item.getObjectId(), item.getString("GameName"), "N", item.getString("RestaurantCode"));
+                                }
+
+                            }
+
+
+                            dbHandler.close();
+                            if(missing && (index >= adList.size()-1))
+                            { Intent intent = new Intent(MyAdsListActivity.this, MyAdsListActivity.class);
+                                startActivity(intent);
+                                finish();}
+                            index ++;
+                        }
+;
                     } else {
                         Log.d("score", "Error: " + e.getMessage());
                     }
+
                 }
             });
 
-        }
+
         // retrieve data from database
 
-
+        dbHandler.open();
+        Cursor c = dbHandler.searchAllAds();
         int index = 0;
         if (c.moveToFirst()) { // if cursor move to first that means there are some data
             do {
@@ -191,7 +265,64 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
     /**
      * helper to set retrieve objects : retrieveResult and retrieveImageMap
      */
+void  getimg(ParseFile imageFile){
 
+/*    String imageUrl = imageFile.getUrl() ;//live url
+    Uri imageUri = Uri.parse(imageUrl);
+    ImageView temp = (ImageView) findViewById(R.id.tmp);
+    Picasso.with(this).load(imageUri.toString()).into(temp);
+    temp.setDrawingCacheEnabled(true);
+
+    temp.buildDrawingCache();
+
+    Bitmap bm = temp.getDrawingCache();
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+    byte[] byteArray = stream.toByteArray();
+    dbHandler.open();
+    ParseObject item = restaurantRecords.get(0);
+    final long adID =   dbHandler.insertAd(item.getString("Title"), item.getString("Name"), item.getString("Details"), item.getString("ImageUrl"), "N/A", 1, byteArray, item.getObjectId(), item.getString("GameName"), "N", item.getString("RestaurantCode"));
+    restaurantRecords.remove(0);
+    MyAdsListActivity.this.l.unlock();
+
+    dbHandler.close();*/
+
+
+   // this.l.lock();
+
+   imageFile.getDataInBackground(new GetDataCallback() {
+        public void done(byte[] data, ParseException e) {
+
+                if (e == null) {
+
+                    // data has the bytes for the image
+                    dbHandler.open();
+                    ParseObject item = restaurantRecords.get(0);
+                    final long adID =   dbHandler.insertAd(item.getString("Title"), item.getString("Name"), item.getString("Details"), item.getString("ImageUrl"), "N/A", 1, data, item.getObjectId(), item.getString("GameName"), "N", item.getString("RestaurantCode"));
+                    restaurantRecords.remove(0);
+                   // MyAdsListActivity.this.l.unlock();
+
+                    dbHandler.close();
+
+                    if (restaurantRecords.size() == 0){
+                        Intent intent = new Intent(MyAdsListActivity.this, MyAdsListActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
+                    // Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
+
+
+                } else {
+
+                    dbHandler.close();
+                   // MyAdsListActivity.this.l.unlock();
+                }
+
+
+        }
+    });
+}
     // handing the circle buttons the side
     @Override
     public void onClick(View v) {
@@ -204,7 +335,11 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
             }
         }
     }
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_my_ad_list, menu);
+        return true;
+    }
     @Override
     public void onStart() {
         super.onStart();
@@ -260,7 +395,23 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
                 Intent intent = new Intent(this, ContactListActivity.class);
                 startActivity(intent);
                 finish();
-        }}
+                break;
+        }
+            case  R.id.log_out: {
+
+            sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putString("firstName", "invalid");
+            editor.commit();
+                dbHandler.open();
+
+                dbHandler.deleteAll();
+                dbHandler.close();
+                Intent intent = new Intent(this, ContactListActivity.class);
+                startActivity(intent);
+                finish();
+            break;}
+        }
 
         return super.onOptionsItemSelected(item);}
     @Override
@@ -280,7 +431,7 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
         super.onDestroy();
 
         mRecyclerView.setAdapter(null);
-        unbindDrawables(findViewById(R.id.contact_list_root_view));
+        //unbindDrawables(findViewById(R.id.contact_list_root_view));
         Runtime.getRuntime().gc();
     }
 
@@ -296,5 +447,16 @@ public class MyAdsListActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
+    public void saveToSharedPreferences(String name, boolean value){
+        SharedPreferences.Editor editor = sharedPrefs.edit();
 
+
+        editor.putBoolean(name, value);
+
+
+        editor.apply();
+
+
+
+    }
 }

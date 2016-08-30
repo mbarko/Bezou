@@ -71,14 +71,13 @@
                 android:adjustViewBounds="true"
                 android:id="@+id/ad_pic"
 
-                android:src="@drawable/mic"
-
 
                 android:layout_row="0"
                 android:layout_column="0"
                 android:focusableInTouchMode="false"
                 android:foreground="#26A69A"
-                android:foregroundTint="#26A69A" />
+                android:foregroundTint="#26A69A"
+                android:layout_marginBottom="-12dp" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -90,12 +89,13 @@
                 android:textAlignment="center"
                 android:gravity="center_horizontal|fill_vertical"
                 android:textStyle="bold"
-                android:background="#26A69A"
+                android:background="#82ac13"
                 android:textColor="#FFFFFF"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="20dp"
                 android:layout_rowSpan="3"
-                android:layout_marginTop="0dp" />
+                android:layout_marginTop="0dp"
+                android:autoText="true" />
 
 
 
@@ -247,6 +247,8 @@
 
         </GridLayout>
 
+
+
     </RelativeLayout>
 
 </ScrollView>
@@ -258,7 +260,7 @@
          circle:backgroundTint="#F06292"
          android:layout_gravity="center_horizontal|bottom|right"
          android:src="@drawable/stat_2"
-         android:layout_marginBottom="80dp"
+         android:layout_marginBottom="125dp"
          android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:visibility="invisible"
@@ -276,7 +278,8 @@
         android:layout_column="0"
         android:layout_alignEnd="@+id/gridLayout"
         android:layout_alignRight="@+id/gridLayout"
-        android:layout_alignBottom="@+id/gridLayout" />
+        android:layout_alignBottom="@+id/gridLayout"
+        android:layout_marginRight="10dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/redeem_button"
@@ -286,5 +289,10 @@
         android:src="@drawable/check_icon"
         circle:backgroundTint="#F06292"
         android:layout_gravity="right|bottom" />
+
+    <com.nhaarman.supertooltips.ToolTipRelativeLayout
+        android:id="@+id/activity_main_tooltipRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </FrameLayout>

@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
@@ -50,7 +52,7 @@ import android.widget.EditText;
 public class CreateAdActivity extends AppCompatActivity implements View.OnClickListener{
 
     int isMyAd = 1;
-    Button uploadImageButton;
+    FloatingActionButton uploadImageButton;
     // this is the action code we use in our intent
     // this way we know we're looking at the response from our own action
     private static final int SELECT_PICTURE = 1;
@@ -81,7 +83,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_ad);
-
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 
         dbHandler = new DBHandler(getBaseContext());
@@ -95,7 +97,7 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
         adImageUrl = (TextView) findViewById(R.id.adImageUrl);
         adImage = (ImageView)findViewById(R.id.adImage);
         // Locate the button in main.xml
-        uploadImageButton = (Button) findViewById(R.id.uploadbtn);
+        uploadImageButton = (FloatingActionButton) findViewById(R.id.uploadbtn);
 
         // Capture button clicks
 
@@ -108,10 +110,10 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
 
         long currenttime = System.currentTimeMillis();
 
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         long lasttaptime = sharedPrefs.getLong("lasttaptime", 0);
 
-        if ((currenttime - lasttaptime) < 3600000) {
+        if ((currenttime - lasttaptime) < 10000) {
             new AlertDialog.Builder(this)
                     .setTitle("You Tapped a second ago !?")
                     .setMessage("You need to wait an hour before you can try again!")
@@ -217,7 +219,11 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
                                 if (e == null) {
                                     // data has the bytes for the image
                                     retrieveImage = data;
-                                    adImage.setImageBitmap(dbHandler.getImage(retrieveImage));
+                                   // adImage.setImageBitmap(dbHandler.getImage(retrieveImage));
+
+                                    Drawable d = new BitmapDrawable(getResources(), dbHandler.getImage(retrieveImage));
+                                    adImage.setBackground(d);
+
                                     final long rowID = dbHandler.insertAd(Title, Name, Details, ImageUrl, "N/A", 0, data, objectID, GameName, firstLetter,"tacoheaven");
                                     final  long adID = dbHandler.selectLastInsearted();
                                    dbHandler.close();
@@ -247,7 +253,9 @@ public class CreateAdActivity extends AppCompatActivity implements View.OnClickL
 
 
                         if (image != null){
-                            adImage.setImageBitmap(dbHandler.getImage(image));
+
+                            Drawable d = new BitmapDrawable(getResources(), dbHandler.getImage(image));
+                            adImage.setBackground(d);
                         }
                         dbHandler.close();
 
@@ -303,7 +311,7 @@ if(tapstat == true)
 
        else {
           uploadImageButton.setVisibility(View.VISIBLE);
-            // User is creating this add.
+          /*  // User is creating this add.
             // Check ShredPreferenced and auto fill user information if available
 
             sharedPrefs = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
@@ -318,7 +326,7 @@ if(tapstat == true)
             if(!UserFullName.isEmpty())
                 fullName.setText(UserFullName);
             if(!UserPhoneNumber.isEmpty())
-                phoneNumber.setText(UserPhoneNumber);
+                phoneNumber.setText(UserPhoneNumber);*/
         }
 
         uploadImageButton.setOnClickListener(new View.OnClickListener() {
@@ -603,6 +611,7 @@ else{
                     else{
                         // changing adImage to a BitMap
                         adImage.setDrawingCacheEnabled(true);
+                        adImage.setImageResource(android.R.color.transparent);
                         adImage.buildDrawingCache();
                         Bitmap bitmap = adImage.getDrawingCache();
 
@@ -638,7 +647,8 @@ else{
 
                     // Create a New Class called "ImageUpload" in Parse
                     final ParseObject imgupload = new ParseObject("Ad_info_test2");
-
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                    String tst = sharedPrefs.getString("firstName", "");
                     // Create a column named "ImageName" and set the string
                     imgupload.put("ImageName", "Ad Pic");
 
@@ -651,8 +661,8 @@ else{
                     imgupload.put("GameName", GameName);
                     imgupload.put("ImageUrl",ImageUrl);
                     imgupload.put("TapStat",0);
-                    imgupload.put("RedeemStat",0);
-                    imgupload.put("RestaurantCode","tacoheaven");
+                    imgupload.put("RedeemStat", 0);
+                    imgupload.put("RestaurantCode",tst);
 
 
                     // Create the class and the columns
@@ -736,7 +746,10 @@ else{
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 20, stream);
                 image = stream.toByteArray();
                 //Bharath how do I uncompress
-                adImage.setImageBitmap(bitmap);
+                adImage.setImageResource(android.R.color.transparent);
+                Drawable d = new BitmapDrawable(getResources(), bitmap);
+                adImage.setBackground(d);
+                //adImage.setImageBitmap(bitmap);
 
             }
         }

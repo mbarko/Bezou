@@ -6,9 +6,11 @@
         android:id="@+id/action_favorite"
         android:icon="@mipmap/bizou_launcher"
         app:showAsAction="ifRoom"/>-->
-    <item android:id="@+id/my_ads" android:title="@string/my_ads"
-        android:orderInCategory="100" android:showAsAction="never" />
+
+    <item android:id="@+id/my_ads" android:title="SignIn"
+        android:orderInCategory="100" app:showAsAction="never"
+        />
     <item android:id="@+id/my_profile" android:title="@string/my_profile"
-        android:orderInCategory="100" android:showAsAction="never" />
+        android:orderInCategory="100" app:showAsAction="never" />
 
 </menu>

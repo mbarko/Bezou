@@ -152,7 +152,7 @@ public class DBHandler {
         return cursor.getLong(0);
     }
     public Cursor searchAdbyID (long adId){
-        return db.query(ADS_TABLE, new String[]{TITLE, USER_NAME, DESCRIPTION, IMAGE_URL, PHONE, IS_MY_AD, KEY_IMG, OBJ_ID, GAME_NAME, COLLECTED_LETTERS,RESTAURANT_CODE}, "_id=" + adId, null, null, null, null, null);
+        return db.query(ADS_TABLE, new String[]{TITLE, USER_NAME, DESCRIPTION, IMAGE_URL, PHONE, IS_MY_AD, KEY_IMG, OBJ_ID, GAME_NAME, COLLECTED_LETTERS, RESTAURANT_CODE}, "_id=" + adId, null, null, null, null, null);
     }
 
    public Cursor searchAdbyObj_ID (String objId){
@@ -171,9 +171,24 @@ public class DBHandler {
         return db.delete(ADS_TABLE, "_id=" + adId, null);
     }
 
+    public int deleteAll()
+    {
+        return db.delete(ADS_TABLE, null, null);
+    }
+
     public void UpdateColumn(String ColumnName,String newValue,Long adID){
         String selectQuery = "UPDATE " + ADS_TABLE + " SET "+ColumnName+" = '"+newValue +"' WHERE _id = "+adID;
         db.execSQL(selectQuery);
     }
-    
+
+    public void UpdateColumn(String ColumnName,byte[] newValue,Long adID){
+       // String selectQuery = "UPDATE " + ADS_TABLE + " SET "+ColumnName+" = '"+newValue +"' WHERE _id = "+adID;
+       // db.execSQL(selectQuery);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("image_data",newValue);
+        String where = "_id=?";
+        String[] whereArgs = new String[] {String.valueOf(adID)};
+        db.update(ADS_TABLE, contentValues, where, whereArgs);
+
+    }
 }

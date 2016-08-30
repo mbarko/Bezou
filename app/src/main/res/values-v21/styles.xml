@@ -9,21 +9,38 @@
         <item name="android:colorAccent">#009688</item>
         <item name="actionOverflowMenuStyle">@style/CMOptionsMenu</item>
         <item name="android:actionBarStyle">@style/MyApp.ActionBar</item>
+        <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
     </style>
 
-    <style name="CMOptionsMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
-        <item name="android:textColorPrimary">#000000</item>  </style>
 
         <!-- Bonus: if you want to style whole Action Bar, not just the menu -->
         <style name="MyApp.ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
             <!-- Blue background color & black bottom border -->
             <item
                 name="android:icon"
-                > @mipmap/bizou_launcher</item>
+                > @mipmap/bizou_launcher2</item>
             <item name="android:colorBackground">#FFFFFF</item>
+            <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
+            <item name="android:actionOverflowMenuStyle">@style/CMOptionsMenu</item>
+            <item name="android:actionButtonStyle">@style/myActionButtonStyle</item>
+            <item name="actionButtonStyle">@style/myActionButtonStyle</item>
         </style>
+    <style name="CMOptionsMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:textColorPrimary">#0090f0</item>
+        <item name="android:background">#004060</item>
+    </style>
 
-
+    <style name="OverFlow" parent="@android:style/Widget.Holo.ActionButton.Overflow">
+        <item name="android:src">@mipmap/cook_overflow</item>
+        <item name="android:minWidth">20dp</item>
+        <item name="android:maxWidth">20dp</item>
+        <item name="android:width">20dp</item>
+    </style>
+    <style name="myActionButtonStyle" parent="Widget.AppCompat.ActionButton">
+        <item name="android:minWidth">40dp</item>
+        <item name="android:maxWidth">40dp</item>
+        <item name="android:width">40dp</item>
+    </style>
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

@@ -128,6 +128,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-messaging/9.2.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-storage-common/9.2.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-storage/9.2.0/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.nhaarman.supertooltips/library/3.0.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jacoco" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/javaResources" />
@@ -187,22 +188,27 @@
     <orderEntry type="library" exported="" name="support-v4-23.0.0" level="project" />
     <orderEntry type="library" exported="" name="firebase-analytics-impl-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="parse-android-1.10.3" level="project" />
+    <orderEntry type="library" exported="" name="library-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="firebase-auth-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-22.0.0" level="project" />
+    <orderEntry type="library" exported="" name="activation" level="project" />
+    <orderEntry type="library" exported="" name="mail" level="project" />
     <orderEntry type="library" exported="" name="play-services-wallet-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-clearcut-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-panorama-9.2.0" level="project" />
+    <orderEntry type="library" exported="" name="additionnal" level="project" />
     <orderEntry type="library" exported="" name="play-services-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-location-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-tagmanager-9.2.0" level="project" />
+    <orderEntry type="library" exported="" name="library-3.0.0" level="project" />
     <orderEntry type="library" exported="" name="mediarouter-v7-23.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-plus-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-iid-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="facebook-android-sdk-4.1.0" level="project" />
-    <orderEntry type="library" exported="" name="firebase-database-connection-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-gcm-9.2.0" level="project" />
-    <orderEntry type="library" exported="" name="appcompat-v7-23.0.0" level="project" />
+    <orderEntry type="library" exported="" name="firebase-database-connection-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="firebase-storage-common-9.2.0" level="project" />
+    <orderEntry type="library" exported="" name="appcompat-v7-23.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-basement-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-tasks-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.0.0" level="project" />

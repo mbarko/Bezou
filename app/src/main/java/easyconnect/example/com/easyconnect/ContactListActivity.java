@@ -1,15 +1,24 @@
 package easyconnect.example.com.easyconnect;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +26,9 @@ import android.view.View;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.nhaarman.supertooltips.ToolTip;
+import com.nhaarman.supertooltips.ToolTipRelativeLayout;
+import com.nhaarman.supertooltips.ToolTipView;
 
 import java.util.ArrayList;
 import android.support.v7.app.ActionBar;
@@ -27,21 +39,27 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 
-public class ContactListActivity extends AppCompatActivity implements View.OnClickListener {
+public class ContactListActivity extends AppCompatActivity implements View.OnClickListener, ToolTipView.OnToolTipViewClickedListener {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private static String LOG_TAG = "CardViewActivity";
     private ArrayList results = new ArrayList<DataObject>();
-
+    SharedPreferences sharedPrefs;
     DBHandler dbHandler;
     Cursor c;
+    private ToolTipView myToolTipView;
+    private ToolTipView myToolTipView2;
+    private ToolTipView myToolTipView3;
+    private ToolTipView myToolTipView4;
+    private  boolean restaurantowner;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +67,114 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_contact_list);
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.mipmap.bizou_launcher);
+        getSupportActionBar().setLogo(R.mipmap.bizou_launcher2);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        final FloatingActionButton NFC_link = (FloatingActionButton) findViewById(R.id.NFC_link);
+
+      final  ToolTipRelativeLayout toolTipRelativeLayout = (ToolTipRelativeLayout) findViewById(R.id.activity_main_tooltipRelativeLayout);
+
+        try {
+if(!sharedPrefs.getBoolean("isChefChecked",false)) {
+
+    new AlertDialog.Builder(this)
+            .setTitle("Hi there ")
+            .setMessage("Are you a restaurant owner ?")
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // continue with delete
+                    // delete the advertisement from the database
+                    restaurantowner = true;
+                    Intent intent = new Intent(ContactListActivity.this, ContactListActivity.class);
+                    saveToSharedPreferences("restaurantOwner", restaurantowner);
+                    saveToSharedPreferences("isChefChecked", true);
+                    startActivity(intent);
+                    finish();
+                    // After deleting the advertisement from the db, go back to the ListActivity
+
+                }
+            })
+            .setNegativeButton("no", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(ContactListActivity.this, ContactListActivity.class);
+                    restaurantowner = false;
+                    saveToSharedPreferences("restaurantOwner", restaurantowner);
+                    saveToSharedPreferences("isChefChecked", true);
+                    startActivity(intent);
+                    finish();
+                }
+            })
+            .setIcon(R.mipmap.chef)
+            .show();
+
+
+}} catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                if(!sharedPrefs.getBoolean("myToolTipView2",false)&& sharedPrefs.getBoolean("isChefChecked",false)) {
+
+                final ToolTip toolTip2 = new ToolTip().
+                        withContentView(LayoutInflater.from(ContactListActivity.this).inflate(R.layout.custom_tooltip_see, null))
+                        .withColor(ContextCompat.getColor(ContactListActivity.this, R.color.tip_orange))
+                        .withAnimationType(ToolTip.AnimationType.FROM_TOP);
+
+                myToolTipView2 = toolTipRelativeLayout.showToolTipForView(toolTip2, findViewById(R.id.ptr_txt2));
+                myToolTipView2.setOnToolTipViewClickedListener(ContactListActivity.this);
+                saveToSharedPreferences("myToolTipView2", true);
+            }}
+        }, 1000);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                android.nfc.NfcAdapter mNfcAdapter= android.nfc.NfcAdapter.getDefaultAdapter(ContactListActivity.this);
+                if(!mNfcAdapter.isEnabled() && sharedPrefs.getBoolean("isChefChecked",false)) {
+                    NFC_link.setVisibility(View.VISIBLE);
+                    NFC_link.setOnClickListener(ContactListActivity.this);
+                    final ToolTip toolTip3 = new ToolTip().withContentView(LayoutInflater.from(ContactListActivity.this).inflate(R.layout.custom_tooltip_nfc, null))
+                        .withColor(ContextCompat.getColor(ContactListActivity.this, R.color.tip_orange))
+                        .withAnimationType(ToolTip.AnimationType.FROM_TOP);
+                myToolTipView3 = toolTipRelativeLayout.showToolTipForView(toolTip3, findViewById(R.id.NFC_link));
+                myToolTipView3.setOnToolTipViewClickedListener(ContactListActivity.this);
+                saveToSharedPreferences("myToolTipView3", true);
+            }}
+        }, 4000);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(!sharedPrefs.getBoolean("myToolTipView4",false)&& sharedPrefs.getBoolean("isChefChecked",false)&& !sharedPrefs.getBoolean("restaurantOwner",false)) {
+                final ToolTip toolTip4 = new ToolTip().withContentView(LayoutInflater.from(ContactListActivity.this).inflate(R.layout.custom_tooltip_pic, null))
+                        .withColor(ContextCompat.getColor(ContactListActivity.this, R.color.tip_orange))
+                        .withAnimationType(ToolTip.AnimationType.FROM_TOP);
+                myToolTipView4 = toolTipRelativeLayout.showToolTipForView(toolTip4, findViewById(R.id.ptr_txt4));
+                myToolTipView4.setOnToolTipViewClickedListener(ContactListActivity.this);
+                saveToSharedPreferences("myToolTipView4", true);
+            }}
+        }, 5000);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(!sharedPrefs.getBoolean("myToolTipView",false)&& sharedPrefs.getBoolean("isChefChecked",false)&& sharedPrefs.getBoolean("restaurantOwner",false)) {
+                final ToolTip toolTip = new ToolTip().withContentView(LayoutInflater.from(ContactListActivity.this).inflate(R.layout.custom_tooltip, null)).withColor(ContextCompat.getColor(ContactListActivity.this, R.color.tip_green))
+                        .withShadow().withAnimationType(ToolTip.AnimationType.FROM_TOP);
+                myToolTipView = toolTipRelativeLayout.showToolTipForView(toolTip, findViewById(R.id.ptr_txt));
+                myToolTipView.setOnToolTipViewClickedListener(ContactListActivity.this);
+                saveToSharedPreferences("myToolTipView", true);
+            }}
+        }, 5000);
+
+
+
+
+
+
 
         // initializing database
         dbHandler = new DBHandler(getBaseContext());
@@ -79,10 +203,13 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
         createAdButton.setVisibility(View.GONE);
 
 
+       // myToolTipView.setOnToolTipViewClickedListener(this);
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
 
     /*
     LocationListener locationListenerGps = new LocationListener() {
@@ -167,7 +294,7 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
 
     // handing the circle buttons the side
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         switch (v.getId()) {
             //case R.id.contacts_button: {
             //    Intent intent = new Intent(this, ConfirmInfoActivity.class);
@@ -186,9 +313,42 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
                 finish();
                 break;
             }
+            case R.id.NFC_link: {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                    startActivity(intent);
+                }
+                break;
+            }
+  /*          case  R.id.mymyToolTipView2 {
+                if (mRedToolTipView == null) {
+                    addRedToolTipView();
+                } else {
+                    mRedToolTipView.remove();
+                    mRedToolTipView = null;
+                }*/
         }
     }
 
+    @Override
+    public void onToolTipViewClicked(final ToolTipView toolTipView) {
+        if (myToolTipView == toolTipView) {
+            myToolTipView.remove();
+            myToolTipView = null;
+        } else if (myToolTipView2 == toolTipView) {
+            myToolTipView2.remove();
+            myToolTipView2 = null;
+        } else if (myToolTipView3 == toolTipView) {
+            myToolTipView3.remove();
+            myToolTipView3 = null;
+        } else if (myToolTipView4 == toolTipView) {
+            myToolTipView4.remove();
+            myToolTipView4 = null;
+        }
+    }
     @Override
     public void onStart() {
         super.onStart();
@@ -231,7 +391,12 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_contact_list, menu);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Boolean tst = sharedPrefs.getBoolean("restaurantOwner", false);
+        if(!tst)
+        getMenuInflater().inflate(R.menu.menu_contact_list_user, menu);
+        else
+            getMenuInflater().inflate(R.menu.menu_contact_list, menu);
         return true;
     }
 
@@ -246,7 +411,7 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
                 // After deleting the advertisement from the db, go back to the ListActivity
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 String tst = prefs.getString("firstName",null);
-                if(prefs.getString("firstName","").equals("tacoheaven")||prefs.getString("firstName","").equals("duma&mizo")){
+                if((tst  != null) && !prefs.getString("firstName","").equals("invalid")){
 
                     Intent intent = new Intent(this,MyAdsListActivity.class);
                     startActivity(intent);
@@ -264,7 +429,7 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
             }
 
             case R.id.my_profile: {
-                Intent intent = new Intent(this, MyProfileActivity.class);
+                Intent intent = new Intent(this, Register.class);
                 startActivity(intent);
 
                 finish();
@@ -284,6 +449,18 @@ public class ContactListActivity extends AppCompatActivity implements View.OnCli
 
        // unbindDrawables(findViewById(R.id.contact_list_root_view));
         Runtime.getRuntime().gc();
+    }
+    public void saveToSharedPreferences(String name, boolean value){
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+
+
+        editor.putBoolean(name, value);
+
+
+        editor.apply();
+
+
+
     }
 
  /*   private void unbindDrawables(View view) {

@@ -4,13 +4,19 @@ import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +28,15 @@ import android.widget.Toast;
 import android.graphics.Color;
 
 import com.google.android.gms.vision.barcode.Barcode;
+import com.nhaarman.supertooltips.ToolTip;
+import com.nhaarman.supertooltips.ToolTipRelativeLayout;
+import com.nhaarman.supertooltips.ToolTipView;
+import com.parse.GetCallback;
+import com.parse.GetDataCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 import android.support.v4.app.NavUtils;
 
@@ -38,7 +53,7 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
     ImageView ad_pic;
     String object_id;
     TextView collected_letters;
-
+    SharedPreferences sharedPrefs;
 
     DBHandler dbHandler;
     Cursor c;
@@ -46,6 +61,8 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
     boolean isMyAd;
 
     long adID;
+    private ToolTipView myToolTipView;
+    private ToolTipView myToolTipView2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +79,28 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
         c.moveToFirst();
         //Toast.makeText(getApplicationContext(), "Title: "+ c.getString(0), Toast.LENGTH_SHORT).show();
 
+        ToolTipRelativeLayout toolTipRelativeLayout = (ToolTipRelativeLayout) findViewById(R.id.activity_main_tooltipRelativeLayout);
+        ToolTip toolTip = null;
+        ToolTip toolTip2 = null;
+        try {
+            if(!sharedPrefs.getBoolean("myToolTipView_myinfo",false)&& isMyAd) {
+            toolTip = new ToolTip().
+                    withContentView(LayoutInflater.from(this).inflate(R.layout.custom_tooltip_stat, null))
+                    .withColor(ContextCompat.getColor(this, R.color.redeem_color))
+                    .withShadow().withAnimationType(ToolTip.AnimationType.FROM_TOP);
+            toolTip2 = new ToolTip()
+                    . withContentView(LayoutInflater.from(this).inflate(R.layout.custom_tooltip_strwrite, null))
+                    .withColor(ContextCompat.getColor(this, R.color.tip_green))
+                    .withAnimationType(ToolTip.AnimationType.FROM_MASTER_VIEW);
+            myToolTipView = toolTipRelativeLayout.showToolTipForView(toolTip, findViewById(R.id.statistics));
+            myToolTipView.setOnClickListener(this);
+            myToolTipView2 = toolTipRelativeLayout.showToolTipForView(toolTip2, findViewById(R.id.nfcTag));
+            myToolTipView2.setOnClickListener(this);
+            saveToSharedPreferences("myToolTipView_myinfo", true);}
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // moving nfc tag programming page
         FloatingActionButton nfcTag = (FloatingActionButton) findViewById(R.id.nfcTag);
@@ -154,13 +193,64 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
             InputStream is = new ByteArrayInputStream(image);
             Bitmap preview_bitmap = BitmapFactory.decodeStream(is, null, options);
             //Picasso.with(this).load(c.getString(3)).into(ad_pic);
-            ad_pic.setImageBitmap(preview_bitmap);
+            ad_pic.setImageResource(android.R.color.transparent);
+            Drawable d = new BitmapDrawable(getResources(), preview_bitmap);
+            ad_pic.setBackground(d);
         }
+        else{
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Ad_info_test2");
+            RetrieveParseObjects(c.getString(7), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject object, ParseException e) {
+
+                    if (e == null) {
+
+                         ParseFile imageFile = (ParseFile) object.get("ImageFile");
+                         imageFile.getDataInBackground(new GetDataCallback() {
+                             public void done(byte[] data, ParseException e) {
+
+                                 if (e == null) {
+
+                                     // data has the bytes for the image
+                                     dbHandler.open();
+                                     dbHandler.UpdateColumn("image_data", data,adID);
+
+                                     // MyAdsListActivity.this.l.unlock();
+
+                                     dbHandler.close();
+
+
+
+                                     Intent intent = new Intent(ContactInfoActivity.this, ContactInfoActivity.class);
+
+                                     // This is an ad made by user
+                                     intent.putExtra("myAd", true);
+                                     // Put local db Ad id
+                                     intent.putExtra("AD_ID", adID);
+                                     // Put the parse db Object ID
+                                     intent.putExtra("Object_ID", c.getString(7));
+                                     //((MyRecyclerViewAdapter) mAdapter).clearData();
+                                     startActivity(intent);
+                                     finish();
+
+                                     // Toast.makeText(getApplicationContext(), "Inserted to AD_ID=" + adID, Toast.LENGTH_LONG).show();
+
+
+                                 } else {
+
+                                     dbHandler.close();
+                                     // MyAdsListActivity.this.l.unlock();
+                                 }
+
+
+                             }
+                         });
+                     }}});}
 
       /*  if (c.getString(3) != null || !c.getString(3).equals("")  )
         Picasso.with(getApplicationContext()).load( c.getString(3) ).into(ad_pic);*/
 
-        dbHandler.close();
+                     dbHandler.close();
 
 
       /*  FloatingActionButton mapInfoButton = (FloatingActionButton)findViewById(R.id.mapInfo);
@@ -178,39 +268,39 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
             }
         });*/
 
-        // Demonically SHOW button and read parse db Object ID
-        // Show only for my ads
-        // By default this button in invisible
-        if (isMyAd) {
-            // never show map button
+                     // Demonically SHOW button and read parse db Object ID
+                     // Show only for my ads
+                     // By default this button in invisible
+                     if (isMyAd) {
+                         // never show map button
         /*mapInfoButton.setVisibility(View.VISIBLE);*/
-            nfcTag.setVisibility(View.VISIBLE);
-            stat_button.setVisibility(View.VISIBLE);
-            stat_button.setOnClickListener(this);
-            TextView collected_letters_title= (TextView) findViewById(R.id.textView4);
-            collected_letters_title.setVisibility(View.GONE);
-            collected_letters.setVisibility(View.GONE);
-            object_id = intent.getStringExtra("Object_ID");
-        }
-    }
+                         nfcTag.setVisibility(View.VISIBLE);
+                         stat_button.setVisibility(View.VISIBLE);
+                         stat_button.setOnClickListener(this);
+                         TextView collected_letters_title = (TextView) findViewById(R.id.textView4);
+                         collected_letters_title.setVisibility(View.GONE);
+                         collected_letters.setVisibility(View.GONE);
+                         object_id = intent.getStringExtra("Object_ID");
+                     }
+                 }
 
 
-    @Override
-    public void onBackPressed() {
+                 @Override
+                 public void onBackPressed() {
 
-        Intent intent = new Intent(this, ContactListActivity.class);
-        if(isMyAd == true)
-         intent = new Intent(this,MyAdsListActivity.class);
-
-
-        startActivity(intent);
-        finish();
-    }
-    
-    public void onClick(View selected) {
+                     Intent intent = new Intent(this, ContactListActivity.class);
+                     if (isMyAd == true)
+                         intent = new Intent(this, MyAdsListActivity.class);
 
 
-        AlertDialog message;
+                     startActivity(intent);
+                     finish();
+                 }
+
+                 public void onClick(View selected) {
+
+
+/*        AlertDialog message;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.are_you_sure)
                 .setPositiveButton(R.string.fire, new DialogInterface.OnClickListener() {
@@ -229,115 +319,138 @@ public class ContactInfoActivity extends AppCompatActivity implements OnClickLis
 
 
         // Create the AlertDialog object and return it
-        message = builder.create();
+        message = builder.create();*/
 
 
-       switch (selected.getId()) {
+                     switch (selected.getId()) {
 
-            case R.id.nfcTag: {
-                Intent intent = new Intent(ContactInfoActivity.this, NfcTagWriterActivity.class);
-                // Format here is [contact_name]|[phone_number]|[ad_title]|[ad_description]||[ad_objectID][image_url]
-                //This way we are storing the word
-                intent.putExtra("AD_Info", c.getString(1) + "|" + c.getString(7));
-                startActivity(intent);
-                finish();
-                break;
-            }
-           case R.id.redeem_button: {
-               new AlertDialog.Builder(this)
-                       .setTitle("Redeem Cupon")
-                       .setMessage("Redeem will delete Coupon, make sure restaurant staff see it first!")
-                       .setPositiveButton("Redeem", new DialogInterface.OnClickListener() {
-                           public void onClick(DialogInterface dialog, int which) {
-                               // continue with delete
-                               // delete the advertisement from the database
-                               dbHandler.open();
-                               dbHandler.deleteAd(adID);
-                               dbHandler.close();
-                               // After deleting the advertisement from the db, go back to the ListActivity
+                         case R.id.nfcTag: {
+                             Intent intent = new Intent(ContactInfoActivity.this, NfcTagWriterActivity.class);
+                             // Format here is [contact_name]|[phone_number]|[ad_title]|[ad_description]||[ad_objectID][image_url]
+                             //This way we are storing the word
+                             intent.putExtra("AD_Info", c.getString(1) + "|" + c.getString(7));
+                             startActivity(intent);
+                             finish();
+                             break;
+                         }
+                         case R.id.redeem_button: {
+                             new AlertDialog.Builder(this)
+                                     .setTitle("Redeem Cupon")
+                                     .setMessage("Redeem will delete Coupon, make sure restaurant staff see it first!")
+                                     .setPositiveButton("Redeem", new DialogInterface.OnClickListener() {
+                                         public void onClick(DialogInterface dialog, int which) {
+                                             // continue with delete
+                                             // delete the advertisement from the database
+                                             dbHandler.open();
+                                             dbHandler.deleteAd(adID);
+                                             dbHandler.close();
+                                             // After deleting the advertisement from the db, go back to the ListActivity
 
-                               Intent intent = new Intent(ContactInfoActivity.this,ContactListActivity.class);
+                                             Intent intent = new Intent(ContactInfoActivity.this, ContactListActivity.class);
 
-                               startActivity(intent);
-                               finish();
-                           }
-                       })
-                       .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                           public void onClick(DialogInterface dialog, int which) {
-                               // do nothing
-                           }
-                       })
-                       .setIcon(R.drawable.green_check_icon)
-                       .show();
-               break;
-           }
-          case R.id.statistics: {
+                                             startActivity(intent);
+                                             finish();
+                                         }
+                                     })
+                                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                         public void onClick(DialogInterface dialog, int which) {
+                                             // do nothing
+                                         }
+                                     })
+                                     .setIcon(R.drawable.green_check_icon)
+                                     .show();
+                             break;
+                         }
+                         case R.id.statistics: {
 
-              Intent intent = new Intent(ContactInfoActivity.this,Statistics.class);
-              intent.putExtra("Object_ID", c.getString(7));
-              startActivity(intent);
-              finish();
-              break;
-           }
-        }
+                             Intent intent = new Intent(ContactInfoActivity.this, Statistics.class);
+                             intent.putExtra("Object_ID", c.getString(7));
+                             startActivity(intent);
+                             finish();
+                             break;
+                         }
+                     }
+                 }
+
+                 @Override
+                 public boolean onCreateOptionsMenu(Menu menu) {
+                     // Inflate the menu; this adds items to the action bar if it is present.
+                     getMenuInflater().inflate(R.menu.menu_contact_info, menu);
+                     return true;
+                 }
+    public void RetrieveParseObjects(final String ObjectID, GetCallback<ParseObject> callback) {
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Ad_info_test2");
+        query.whereEqualTo("objectId", ObjectID);
+        query.getFirstInBackground(callback);
+
+
     }
 
-        @Override
-        public boolean onCreateOptionsMenu (Menu menu){
-            // Inflate the menu; this adds items to the action bar if it is present.
-            getMenuInflater().inflate(R.menu.menu_contact_info, menu);
-            return true;
-        }
-
-        @Override
-        public boolean onOptionsItemSelected (MenuItem item){
-            // Handle action bar item clicks here. The action bar will
-            // automatically handle clicks on the Home/Up button, so long
-            // as you specify a parent activity in AndroidManifest.xml.
-            int id = item.getItemId();
-
-            //noinspection SimplifiableIfStatement
-            if (id == R.id.action_delete) {
-
-                // ActionBar -> Delete Ad clicked
-                // delete the advertisement from the database
-                dbHandler.open();
-                dbHandler.deleteAd(adID);
-                dbHandler.close();
-                // After deleting the advertisement from the db, go back to the ListActivity
-
-                if(isMyAd == true){
-                    Intent intent = new Intent(this, MyAdsListActivity.class);
-                    startActivity(intent);
-
-                    finish();}
-                else{
-                    // After viewing the advertisement from the db, go back to the ListActivity
-                    Intent intent = new Intent(this, ContactListActivity.class);
-                    startActivity(intent);
-                    finish();}
-            }
-            else if(id == android.R.id.home){
-
-                if(isMyAd == true){
-                    Intent intent = new Intent(this, MyAdsListActivity.class);
-                    startActivity(intent);
-
-                    finish();}
-                else{
-                // After viewing the advertisement from the db, go back to the ListActivity
-                Intent intent = new Intent(this, ContactListActivity.class);
-                    startActivity(intent);
-                    finish();}
-
-            return true;}
-
-            return super.onOptionsItemSelected(item);
-        }
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Runtime.getRuntime().gc();
-        //System.exit(0);
+                 public boolean onOptionsItemSelected(MenuItem item) {
+                     // Handle action bar item clicks here. The action bar will
+                     // automatically handle clicks on the Home/Up button, so long
+                     // as you specify a parent activity in AndroidManifest.xml.
+                     int id = item.getItemId();
+
+                     //noinspection SimplifiableIfStatement
+                     if (id == R.id.action_delete) {
+
+                         // ActionBar -> Delete Ad clicked
+                         // delete the advertisement from the database
+                         dbHandler.open();
+                         dbHandler.deleteAd(adID);
+                         dbHandler.close();
+                         // After deleting the advertisement from the db, go back to the ListActivity
+
+                         if (isMyAd == true) {
+                             Intent intent = new Intent(this, MyAdsListActivity.class);
+                             startActivity(intent);
+
+                             finish();
+                         } else {
+                             // After viewing the advertisement from the db, go back to the ListActivity
+                             Intent intent = new Intent(this, ContactListActivity.class);
+                             startActivity(intent);
+                             finish();
+                         }
+                     } else if (id == android.R.id.home) {
+
+                         if (isMyAd == true) {
+                             Intent intent = new Intent(this, MyAdsListActivity.class);
+                             startActivity(intent);
+
+                             finish();
+                         } else {
+                             // After viewing the advertisement from the db, go back to the ListActivity
+                             Intent intent = new Intent(this, ContactListActivity.class);
+                             startActivity(intent);
+                             finish();
+                         }
+
+                         return true;
+                     }
+
+                     return super.onOptionsItemSelected(item);
+                 }
+    public void saveToSharedPreferences(String name, boolean value){
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+
+
+        editor.putBoolean(name, value);
+
+
+        editor.apply();
+
+
+
     }
-    }
+
+                 @Override
+                 public void onDestroy() {
+                     super.onDestroy();
+                     Runtime.getRuntime().gc();
+                     //System.exit(0);
+                 }
+             }

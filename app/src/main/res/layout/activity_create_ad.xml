@@ -3,6 +3,7 @@
     xmlns:facebook="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:android.support.design="http://schemas.android.com/tools"
     android:orientation="horizontal"
 
 
@@ -25,24 +26,30 @@
         <!--Fix For "Scrollview can host only one direct child"-->
         <!--http://stackoverflow.com/questions/16699772/scrollview-can-host-only-one-direct-child-->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <!--my name-->
             <LinearLayout
                 android:orientation="horizontal"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="match_parent"
-                >
+                android:layout_marginRight="-50dp"
+                android:layout_marginLeft="-50dp"
+                android:layout_marginTop="-20dp"
+                android:layout_marginBottom="20dp">
 
                 <ImageView
-                    android:layout_width="325dp"
-                    android:layout_height="250dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="350dp"
                     android:adjustViewBounds="true"
 
                     android:id="@+id/adImage"
-                    android:src="@mipmap/mi_taco" />
+                    android:background="@drawable/tfood"
+                    android:layout_marginLeft="-40dp"
+                    android:layout_marginBottom="-40dp"
+                    android:layout_marginTop="-20dp" />
 
             </LinearLayout>
 
@@ -56,10 +63,11 @@
                 <ImageView
                     android:id="@+id/person_icon"
                     android:layout_width="32dip"
-                    android:layout_height="32dip"
+                    android:layout_height="42dip"
                     android:layout_margin="15dp"
-                    android:src="@drawable/word_icon"
-                    android:layout_gravity="left" />
+                    android:src="@drawable/green_word"
+                    android:layout_gravity="left"
+                    android:scaleType="fitXY"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -73,7 +81,8 @@
                         android:background="#00000000"
                         android:inputType="textNoSuggestions"
                         android:cursorVisible="true"
-                        android:hint="Game Word" />
+                        android:hint="Game Word"
+                        android:textSize="20dp" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -119,7 +128,7 @@
                     android:layout_width="32dip"
                     android:layout_height="32dip"
                     android:layout_margin="15dp"
-                    android:src="@drawable/mail_icon"
+                    android:src="@mipmap/t"
                     android:layout_gravity="left" />
 
                 <EditText
@@ -130,7 +139,8 @@
                     android:background="#00000000"
                     android:inputType="textNoSuggestions"
                     android:cursorVisible="true"
-                    android:hint="Ad Title" />
+                    android:hint="Ad Title"
+                    android:textSize="20dp" />
 
             </LinearLayout>
 
@@ -147,7 +157,7 @@
                     android:layout_width="32dip"
                     android:layout_height="32dip"
                     android:layout_margin="15dp"
-                    android:src="@drawable/company_icon"
+                    android:src="@drawable/i"
                     android:layout_gravity="left" />
 
                 <EditText
@@ -158,7 +168,8 @@
                     android:background="#00000000"
                     android:inputType="textNoSuggestions"
                     android:cursorVisible="true"
-                    android:hint="Ad Details" />
+                    android:hint="Ad Details"
+                    android:textSize="20dp" />
 
             </LinearLayout>
             <!--Image Upload-->
@@ -169,13 +180,16 @@
                 android:layout_marginLeft="20dp"
                 android:orientation="horizontal">
 
-                <Button
+         <!--       <Button
                     android:id="@+id/uploadbtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:text="@string/uploadbtn"
-                    android:visibility="invisible"/>
+                    android:visibility="invisible"
+                    />
+                -->
+
 
             </LinearLayout>
             <!--AD Image Url-->
@@ -231,5 +245,18 @@
         android:src="@drawable/check_icon"
         circle:backgroundTint="#F06292"
         android:layout_gravity="right|bottom" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/uploadbtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+
+        android:src="@drawable/pic_icon"
+        circle:backgroundTint="#26a69a"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="70dp"
+        android:scaleType="center"
+        android:visibility="invisible"
+        android:gravity="center|fill_vertical" />
 
 </FrameLayout>

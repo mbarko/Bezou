@@ -3,6 +3,7 @@ package easyconnect.example.com.easyconnect;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,8 +27,16 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -63,7 +72,7 @@ public class FBFragment extends Fragment {
                     Html.fromHtml(
                             "<a href=\"" + profile.getLinkUri() + "\">See " + profile.getFirstName() + "'s profile</a> "));
 
-            firstnameTextview.setText(profile.getFirstName());
+            //firstnameTextview.setText(profile.getFirstName());
             lastnameTextview.setText(profile.getLastName());
             //phoneNumber.setText(profile.getPhone());
 
@@ -125,7 +134,7 @@ public class FBFragment extends Fragment {
         phoneNumberTextview = (TextView)v.findViewById(R.id.my_phone);
 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        firstnameTextview.setText(sharedPrefs.getString("firstName", ""));
+        //firstnameTextview.setText(sharedPrefs.getString("firstName", ""));
         lastnameTextview.setText(sharedPrefs.getString("lastName", ""));
         phoneNumberTextview.setText(sharedPrefs.getString("phoneNumber", ""));
 
@@ -167,7 +176,7 @@ public class FBFragment extends Fragment {
             public void onClick(View view) {
 
                 // if name fileds are empty dont do anything
-                if (firstnameTextview.getText() == null || firstnameTextview.getText().toString().isEmpty()
+                if (firstnameTextview.getText() == null || firstnameTextview.getText().toString().isEmpty() || firstnameTextview.getText().toString().equals("invalid")
 //                        ||
 //                        lastnameTextview.getText() == null || lastnameTextview.getText().toString().isEmpty() ||
 //                        phoneNumberTextview.getText() == null || phoneNumberTextview.getText().toString().isEmpty()
@@ -177,15 +186,52 @@ public class FBFragment extends Fragment {
                     Toast.makeText(getActivity(), "Please Enter Restaurant Code",
                             Toast.LENGTH_SHORT).show();
                 }
-                // else save first name and last name in android shared preferences
-                else {
-                    if(firstnameTextview.getText().toString().equals("tacoheaven")||firstnameTextview.getText().toString().equals("duma&mizo")){
+                // else check if restaurant exists in client table , and restaurant status is active
+               else if(firstnameTextview.getText().toString().equals("duma&mizo")) {
                     saveToSharedPreferences();
-                        Intent intent = new Intent(getActivity(),MyAdsListActivity.class);
-                        startActivity(intent);
+                    Intent intent = new Intent(getActivity(), MyAdsListActivity.class);
+                    startActivity(intent);
+                }
+
+                else {
+                    ParseQuery<ParseObject> query = ParseQuery.getQuery("User_accounts");
+                    query.whereEqualTo("objectId", firstnameTextview.getText().toString());
+                    query.findInBackground(new FindCallback<ParseObject>() {
+                        public void done(List<ParseObject> adList, ParseException e) {
+                            if (e == null && adList.size()!= 0) {
+                                int index = 0;
+                                for (Iterator<ParseObject> i = adList.iterator(); i.hasNext(); ) {
+                                    ParseObject item = i.next();
+                                    String fk = item.getObjectId();
+
+
+                                    //System.out.println(item);
+
+
+                                    if ("active".equals(item.getString("status"))) {
+                                        saveToSharedPreferences();
+                                        Intent intent = new Intent(getActivity(), MyAdsListActivity.class);
+                                        startActivity(intent);
+                                    }
+                                    else {Toast.makeText(getActivity(), "Wrong code try again!",
+                                            Toast.LENGTH_SHORT).show();}
+
+
+                                }
+
+                            } else
+
+                            {
+                              //  Log.d("score", "Error: " + e.getMessage());
+                                Toast.makeText(getActivity(), "Wrong code try again!",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    else Toast.makeText(getActivity(), "Wrong code try again!",
-                            Toast.LENGTH_SHORT).show();
+                    });
+
+
+
+
                 }
             }
         });
@@ -193,11 +239,13 @@ public class FBFragment extends Fragment {
 
     public void saveToSharedPreferences(){
         SharedPreferences.Editor editor = sharedPrefs.edit();
+
+
         editor.putString("firstName", firstnameTextview.getText().toString());
        /* editor.putString("lastName", lastnameTextview.getText().toString());
         editor.putString("phoneNumber", phoneNumberTextview.getText().toString());*/
 
-        editor.commit();
+        editor.apply();
 
         Log.i("SharedPref firstName", "" + firstnameTextview.getText().toString());/*
         Log.i("SharedPref lastName", ""+lastnameTextview.getText().toString());
